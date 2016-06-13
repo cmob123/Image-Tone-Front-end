@@ -1,0 +1,4 @@
+watson-developer-cloud
+numpy
+json
+praw
