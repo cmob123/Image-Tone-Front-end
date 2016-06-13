@@ -8,7 +8,7 @@ Rather than interacting with the reddit API directly, we will use a prebuilt pyt
 Install using the python package manager, pip:  
 `$pip install PRAW`
 
-Our code is in redditDataGetter.py
+See redditDataGetter.py
 
 __TODO__:fill in more later
 
@@ -19,12 +19,16 @@ See [here](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/tone-
 
 The class we wrote to do this is in tone.py
 
-For our application, we only care about emotion data.
-To do this, we run the following:
+The tone analyzer gives us a lot of data that we don't need.
+We can discard personality and writing style data, as well as sentence-level analysis.
+To trim our data, we run the following:
+
 `emotions = raw_json['document_tone']['tone_categories'][0]['tones']`
+
 where raw_json is the full response from the tone analyzer.
-This should narrow down the json to look something like this:
-{
+This should narrow down the JSON to look something like this:
+
+`{
 	"score": 0.25482,
 	"tone_id": "anger",
 	"tone_name": "Anger"
@@ -48,7 +52,11 @@ This should narrow down the json to look something like this:
 	"score": 0.199345,
 	"tone_id": "sadness",
 	"tone_name": "Sadness"
-}
+}`
 
-Once you have the simplified JSON, you can extract the scores: see emotions_num_extract()
+Once you have the simplified JSON, you can extract the scores using the JSON libraries
+
+Setting up visual classifiers
+-----------------------------
+__TODO__
 
