@@ -1,4 +1,5 @@
 import json
+import time
 from watson_developer_cloud import ToneAnalyzerV3
 
 # A class to analyze tone, some sort of ... Tone Analyzer
@@ -14,9 +15,18 @@ class ToneAnalyzer:
 	# Analyzes the text tone
 	# returns a JSON structure containing all document level tone data
 	# Sentence level data is discarded
+	# Occasionally, this fails, since Watson is rate limiting us
+	# In that case, we just want to wait 60 seconds and try again
 	def tone_analyze( self, text ):
 		raw_json = self.tone_analyzer.tone( text = text )
-		return raw_json['document_tone']
+		try:
+			return raw_json['document_tone']
+		except:
+			print( raw_json )
+			print( "Looks like we're being rate limited. Waiting and trying again" )
+			time.sleep( 60 )
+			# This is fine, nothing wrong here
+			return self.tone_analyze( text )
 
 	
 	# Discards writing style and personality data, returning
