@@ -52,9 +52,9 @@ def main():
 				maxScore = scores[j][i]
 				index = j
 			if( emotions[i][j] > topThird ):
-				fplus.write( images[j] + ",\n" )
+				fplus.write( images[j] + "\n" )
 			elif( emotions[i][j] <= bottomThird ):
-				fminus.write( images[j] + ",\n"  )
+				fminus.write( images[j] + "\n"  )
 		fplus.close()
 		fminus.close()
 
