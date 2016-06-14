@@ -52,21 +52,16 @@ def dataDistance( score1, score2 ):
 def lowEmotion( images, scores ):
 	l = len( scores )
 	emotions = numpy.transpose( scores )
-	avgs = list( map (numpy.mean, emotions) )
+	avgs = list( map ( (lambda x: bisect( 2/3, x) ) , emotions) )
 	low_emo = []
-	print( avgs )
 	for i in range(0, l):
-		print( scores[i] )
 		is_low_emo = True
 		for j in range( 0, len(scores[i])):
 			if( scores[i][j] > avgs[j] ):
 				is_low_emo = False
 				break
-			else:
-				print( "Low emotion on emotion " + str( j ) )
 		if( is_low_emo ):
 			low_emo.append( images[i] )
-	print( low_emo )
 	return low_emo
 
 def bisect( prop, scores ):

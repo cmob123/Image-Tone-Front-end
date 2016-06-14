@@ -9,9 +9,11 @@
 import numpy
 from dataOps import *
 
+data_dir = "../data/"
+
 emo_names = ["Anger", "Disgust", "Fear", "Joy", "Sadness"]
-train_file = "train.txt"
-test_file = "test.txt"
+train_file = data_dir + "train.txt"
+test_file = data_dir + "test.txt"
 
 def main():
 	images = []
@@ -36,10 +38,11 @@ def main():
 
 
 	# Print the images with the highest score for each emotion
+
 	print( "Highest values" )
 	for i in range(0, len(emotions)):
-		fplus = open( "../data/Positive_" + emo_names[i], "w" )
-		fminus = open( "../data/Negative_" + emo_names[i], "w" )
+		fplus = open( data_dir + "Positive_" + emo_names[i], "w" )
+		fminus = open( data_dir + "Negative_" + emo_names[i], "w" )
 		index = 0
 		maxScore = 0
 		topThird = bisect( 2/3, emotions[i] )
@@ -56,6 +59,12 @@ def main():
 		fminus.close()
 
 		print( emo_names[i] + ": " + images[index] )
+	fneg = open( data_dir + "Negative_all", "w" )
+	low_emo = lowEmotion( images, scores )
+	#fneg.write( lowEmotion( images, scores ) )
+	for e in low_emo:
+		fneg.write( e + "\n")
+	fneg.close()
 
 if __name__ == "__main__":
     main()
