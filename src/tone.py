@@ -7,10 +7,9 @@ from watson_developer_cloud import ToneAnalyzerV3
 class ToneAnalyzer:
 	def __init__(self):
 		self.tone_analyzer = ToneAnalyzerV3(
-				password='UPCemjhdhixD',
-				username='05ec4a1d-6a90-47ab-bf15-f23dc733d9e1',
-				version='2016-05-19'
-				)
+				password = "tbcGKRwREvC8",
+    			username = "0d44496f-11a7-4552-9145-d03acd1bf293",
+				version  = "2016-05-19")
 
 	# Analyzes the text tone
 	# returns a JSON structure containing all document level tone data
