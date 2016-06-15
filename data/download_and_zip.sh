@@ -23,10 +23,9 @@ while read -r line
 done < "$filename"
 
 echo "There is no zip command for Windows, so you'll have to zip the contents of this file manually"
-echo "Make sure to delete the folder when you're done
+echo "Make sure to delete the folder when you're done"
 
 
 #zip $filename$suffix$zip $tmp_dir/*
 
 #rm -r $tmp_dir
-
