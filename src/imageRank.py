@@ -5,6 +5,7 @@
 #3) Preprocess the numbers in any way necessary. (Normalize, etc)
 #4) Sort the data and save positive and negative examples into the ../data/ directory
 
+
 import numpy
 from dataOps import *
 
@@ -33,11 +34,10 @@ def main():
 
 	# Turns out that this is handy to have.
 	emotions = numpy.transpose( scores )
-	
 
-
-	# Print the images with the highest score for each emotion
-
+	# Saves the images in the top and bottom 1/3 into Positive_<emotion> and Negative_<emotion> text files
+	# Any image not in *any* top 1/3 gets saved in a Negative_all file
+	# As a side effect, prints the images with the highest score for each emotion
 	print( "Highest values" )
 	for i in range(0, len(emotions)):
 		fplus = open( data_dir + "Positive_" + emo_names[i], "w" )
