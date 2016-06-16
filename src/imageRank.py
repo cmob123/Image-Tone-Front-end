@@ -1,10 +1,9 @@
 # Goal of this file, check for existance of image/data file
 #1) Check for existance of train.txt and test.txt
-#1.5) If the don't exist, run reddittest.py to create them
+#1.5) If the don't exist, run reddittest.py to create them (TODO)
 #2) Import data into internal data structures
 #3) Preprocess the numbers in any way necessary. (Normalize, etc)
-#4) Pass the training data to Watson visual classifiers
-#5) Run testing data, compare answers to baselines
+#4) Sort the data and save positive and negative examples into the ../data/ directory
 
 import numpy
 from dataOps import *
