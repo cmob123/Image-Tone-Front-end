@@ -1,0 +1,63 @@
+div {
+    border-radius: 10px;
+    border-color: white;
+}
+#header {
+    height: 50px;
+    width: 350px;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 0px;
+}
+#title {
+    text-align: center;
+    font-family: serif;
+}
+.color {
+    background-color: #99CCFF;
+}
+body {
+    background-size: 100%;
+}
+}
+#form {
+    width: 300px;
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 55px;
+    float: top;
+}
+.text {
+    color: white;
+    text-align: center;
+}
+#prompt{
+    float: left;
+}
+#field {
+    width: 210px;
+    float: right;
+}
+#buttonDiv {
+    margin: auto;
+    width: 200px;
+    float: bottom;
+    margin-top: 100px;
+}
+#button {
+    margin: 30px;
+    width: 150px;
+    margin-top: 0px;
+}
+#preview {
+    max-width: 400px;
+    max-height: 400px;
+}
+#details {
+    text-align: center;
+    height: 100px;
+    clear: both;
+    bottom: 0%;
+    position: fixed;
+    width: 100%;
+}
