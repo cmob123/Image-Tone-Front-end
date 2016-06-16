@@ -12,13 +12,14 @@ div {
 #title {
     text-align: center;
     font-family: serif;
-}
-.color {
-    background-color: #99CCFF;
+    margin-bottom: 0px;
 }
 body {
     background-size: 100%;
 }
+#formDiv{
+    margin: auto;
+    margin-top: 0px;
 }
 #form {
     width: 300px;
@@ -36,6 +37,7 @@ body {
 }
 #field {
     width: 210px;
+    margin:auto;
     float: right;
 }
 #buttonDiv {
@@ -43,17 +45,33 @@ body {
     width: 200px;
     float: bottom;
     margin-top: 100px;
+    margin-bottom: 0px;
 }
 #button {
     margin: 30px;
     width: 150px;
     margin-top: 0px;
 }
+#previewText {
+    margin-top: 0px;
+}
 #preview {
     max-width: 400px;
     max-height: 400px;
 }
+#resultsDiv {
+    width: 530px;
+    background: rgba(0, 0, 0, 0.6); /* translucent black */
+}
+#list {
+    list-style-type: none;
+}
+li {
+    display: inline;
+    margin: 8px;
+}
 #details {
+    background: rgba(0, 0, 0, 0.4); /* translucent black */
     text-align: center;
     height: 100px;
     clear: both;

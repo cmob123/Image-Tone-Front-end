@@ -16,19 +16,33 @@
 	    <div id="header">
 	    	<h1 id="title" class="text">Image-Tone Analyzer</h1>	
 	    </div>
-	    <form id="form">
-	    	<p class="text" id="prompt">Image Link: </p>
-	    	<input type="text" id="field" onkeypress="if (event.keyCode == 13) displayImage()">
-	    </form>
+	    <div id="formDiv">
+		    <form id="form">
+		    	<p class="text" id="prompt">Image Link: </p>
+		    	<input type="text" id="field" onkeypress="if (event.keyCode == 13) displayImage()">
+		    </form>
+	    </div>
 	    <div id="buttonDiv">
-	    	<button id="button" type="button" onclick="displayImage()">Analyze Image</button>
+	    	<button id="button" type="button" onclick="analyzeTone()">Analyze Image</button>
 	    </div>
 	    <center>
 	    	<h4 class="text" id="previewText"></h4>
 	    	<img src="" id="preview" align="middle">
-	    </center>
-	    <div id="details" class="color">
-	    	<h4>How'd we do this? (link to documentation?)</h3>
+	    <!--</center>
+	    <center>-->
+		    <div id="resultsDiv">
+		    	<h3 id="resultsTitle" class="text"></h3>
+		    	<ul id="list" class="text">
+		    		<li id="tone1"></li>
+		    		<li id="tone2"></li>
+		    		<li id="tone3"></li>
+		    		<li id="tone4"></li>
+		    		<li id="tone5"></li>
+		    	</ul>
+		    </div>
+		</center>
+	    <div id="details">
+	    	<h4 class="text">How'd we do this? (link to documentation?)</h3>
 	    </div>
 	    <script src="button.js"></script>
 	    <noscript>Sorry, your browser does not support JavaScript! :(</noscript>
