@@ -17,22 +17,19 @@ class VisualTrainer:
 	v = None
 	
 	def __init__(self):
-		# TODO
-		"""
-		self.v = VisualRecognitionV3(
-			password = "awDho4FkDovI",
-        	username = "b9917582-7ff3-49a4-9104-aae4b64035b2",
-			version  = "2016-05-20")
-		"""
 		self.v = VisualRecognitionV3('2016-05-20', api_key=apikey)
 	
-	# Build a new classifier with the given name.
-	# Name could be something like "Cats vs Dogs"
-	# class_names is a list of names, like: ["cat", "dog"]
-	# zipfiles is a list of the same length, like: ["cat_pos_ex.zip", "dogs.zip"]
-	#  zipfiles contains a list of .zip files containing examples of the associated class
-	# neg_zipfile is a .zip file containing images that do not fit into any classes
-	# returns a json description of the new classifier
+	"""
+	Build a new classifier with the given name.
+	Name could be something like "Cats vs Dogs"
+	class_names is a list of names, like: ["cat", "dog"]
+	zipfiles is a list of the same length, like: ["cat_pos_ex.zip", "dogs.zip"]
+	zipfiles contains a list of .zip files containing examples of the associated class
+	neg_zipfile is a .zip file containing images that do not fit into any classes
+	returns a json description of the new classifier
+
+	Prompts before constructing the new classifier
+	"""
 	def new_classifier( self, classifier_name, class_names, zipfiles, neg_zipfile ):
 		print( "Are you sure you want to create a new classifier" )
 		print( "Current classifier list is:" )
@@ -67,31 +64,54 @@ class VisualTrainer:
 			f.close()
 		return
 
+	# Prints an unformatted, verbose list of all classifiers
+	# Used soley for debugging, probably
 	def list_classifiers(self):
 		print( json.dumps( self.v.list_classifiers( verbose= True ), indent=4) )
 
+	# deletes a classifier
 	def del_classifier( self, classifier_id ):
 			self.v.delete_classifier( classifier_id)
 		
 
+	"""
+	Classifies a single image using all classifiers we have created
+	Returns a json struct containing all classification probabilities, no matter how small
+	As a side effect, pretty prints the classification details
+	"""
 	def classify_single_image( self, url, classifier_ids = None ):
 		to_ret = self.v.classify( images_url = url, classifier_ids = self.get_classifier_ids(), threshold = 0.0)
 		#print( json.dumps( to_ret, indent=2 ) )
 		self.pp_classify_response( to_ret )
 		return to_ret
 
+	"""
+	pretty print the classifier response in a format like
+	anger: 0.5386
+	fear: 0.0245
+	...
+
+	This is pretty fragile, it more or less expects the format returned by classify_single_image, and if there are any errors it will break
+	Someone should fix this later
+	"""
 	def pp_classify_response( self, some_json):
 		for i in some_json["images"]:
 			for c in i["classifiers"]:
 				for cl in c["classes"]:
 					print("{} : {}".format( cl["class"], cl["score"] ) )
 
-	def del_all_classifiers( self ):
-		self.list_classifiers()
-		text = input( "This will delete ALL classifiers. Type \"YES\" if you really want to do this: ")
-		if( text != "YES" ):
-			print( "exiting, nothing deleted created" )
-			return None
+
+	# Delete all classifiers. They are unrecoverable
+	# If prompt is given as false, this will not confirm your choice, it will just delete everything
+	def del_all_classifiers( self, prompt = True ):
+		if( prompt ):
+			text = input( "This will delete ALL classifiers. Type \"YES\" if you really want to do this: ")
+			if( text != "YES" ):
+				print( "exiting, nothing deleted created" )
+				return None
+
+		# Either they typed YES, or prompt is False
+		# Proceed to delete everything
 		class_list = self.v.list_classifiers( verbose = True )
 		for c in class_list["classifiers"]:
 			self.v.delete_classifier( c["classifier_id"] )
@@ -132,10 +152,6 @@ class VisualTrainer:
 				["sadness"],
 				["../data/sadness.zip"],
 				"../data/neg-sadness.zip")
-
-
-
-#v.new_classifier("Anger or not v2", ["anger"], ["../data/anger.zip"], "../data/neg-anger.zip")
 
 def main( args ):
 
