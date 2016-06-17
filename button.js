@@ -5,7 +5,7 @@
 // if text is invalid, return error and exit
 
 // display image on the screen
-function displayImage(){
+function analyzeTone(){
 	// display preview text
 	document.getElementById("previewText").innerHTML = "Preview:"
 
@@ -14,5 +14,18 @@ function displayImage(){
 
 	// display image
 	document.getElementById("preview").src = text;
-	//document.getElementById("previewWrapper").style.margin = auto;
+
+	// get tone information from the back-end python
+
+	// display results
+	document.getElementById("resultsTitle").innerHTML = "Results:";
+	document.getElementById("tone1").innerHTML = "Tone1: 50%";
+	document.getElementById("tone2").innerHTML = "Tone2: 18%";
+	document.getElementById("tone3").innerHTML = "Tone3: 72%";
+	document.getElementById("tone4").innerHTML = "Tone4: 89%";
+	document.getElementById("tone5").innerHTML = "Tone6: 65%";
+
+	// for some reason the next 2 lines breaks the program
+	//document.getElementById("resultsDiv").style.background-color = "black";
+	//document.getElementById("resultsDiv").style.opacity = ".5";
 }
