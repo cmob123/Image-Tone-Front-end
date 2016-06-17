@@ -14,5 +14,5 @@ notifications:
   - pip install watson-developer-cloud
   - pip install numpy
   - pip install PRAW
-  script: echo TODO
+  script: python test.py
   after_success:
