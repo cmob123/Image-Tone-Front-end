@@ -8,11 +8,9 @@ notifications:
   - '3.3'
   - '3.4'
   - '3.5'
-  - 3.5-dev
-  before_install:
+  - '3.5-dev'
   install:
   - pip install watson-developer-cloud
   - pip install numpy
   - pip install PRAW
-  script:
-  after_success:
+  script: python test.py
