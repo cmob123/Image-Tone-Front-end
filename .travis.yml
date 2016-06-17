@@ -15,5 +15,5 @@ notifications:
   - pip install numpy
   - pip install PRAW
   script:
-    return 0
+  - return 0
   after_success:
