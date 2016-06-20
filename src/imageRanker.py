@@ -9,64 +9,102 @@
 import numpy
 from dataOps import *
 
-data_dir = "../data/"
+class ImageRanker:
+	emo_names = ["Anger", "Disgust", "Fear", "Joy", "Sadness"]
 
-emo_names = ["Anger", "Disgust", "Fear", "Joy", "Sadness"]
-train_file = data_dir + "train.txt"
-test_file = data_dir + "test.txt"
+	def __init__( self, image_file_name = "train.txt", data_dir = "../data/" ):
+		self.data_dir = data_dir
+		image_file = data_dir + image_file_name
+		f = open( image_file, "r" )
+		text = f.readline( )
+		self.images = []
+		self.scores = []
+		#Pull scores and images out of the file
+		while( text != "" ):
+			self.images.append( text.strip() )
+			text = f.readline()
+			if( text != "" ):
+				self.scores.append(eval ( "numpy.array(" +text + ")" ) )
+			else:
+				print( "Mismatch between number of images and number of scores, check your data")
+				return
+			text = f.readline()
 
-def main():
-	images = []
-	scores = []
-	emotions = numpy.array([])
-	train = open( train_file, "r" )
-	text = train.readline( )
-	#Pull scores and images out of the file
-	while( text != "" ):
-		images.append( text.strip() )
-		text = train.readline( )
-		if( text != "" ):
-			scores.append(eval ( "numpy.array(" +text + ")" ) )
-		else:
-			print( "Mismatch between number of images and number of scores, check your data")
-			return
-		text = train.readline()
+		# Turns out that this is handy to have.
+		self.emotions = numpy.transpose( self.scores )
+		self.sort_pos_neg()
+		return
 
-	# Turns out that this is handy to have.
-	emotions = numpy.transpose( scores )
-
-	# Saves the images in the top and bottom 1/3 into Positive_<emotion> and Negative_<emotion> text files
+	# Saves the images in the top and bottom 1/3
 	# Any image not in *any* top 1/3 gets saved in a Negative_all file
 	# As a side effect, prints the images with the highest score for each emotion
-	print( "Highest values" )
-	for i in range(0, len(emotions)):
-		fplus = open( data_dir + "Positive_" + emo_names[i], "w" )
-		fminus = open( data_dir + "Negative_" + emo_names[i], "w" )
-		index = 0
-		maxScore = 0
-		topThird = bisect( 2/3, emotions[i] )
-		bottomThird = bisect( 1/3, emotions[i])
-		for j in range(0, len( emotions[i] ) ):
-			if( emotions[i][j] > maxScore ):
-				maxScore = scores[j][i]
-				index = j
-			if( emotions[i][j] > topThird ):
-				fplus.write( images[j] + "\n" )
-			elif( emotions[i][j] <= bottomThird ):
-				fminus.write( images[j] + "\n"  )
+
+	# FUTURE JESSE: YOU NEED TO USE THE emo_bitmap COMPARED AGAINST [ 1/3 ] * 5 TO DETERMINE THE CLASSIFIERS EFFECTIVENESS
+	def sort_pos_neg( self ):
+		self.pos_imgs = [None]*5
+		self.neg_imgs = [None]*5
+		self.neg_all_imgs = []
+		self.emo_bitmap = []
+		for i in range( 0, len(self.images) ):
+			self.emo_bitmap.append( [] )
+		for i in range(0, len( self.emotions )):
+			self.pos_imgs[i] = []
+			self.neg_imgs[i] = []
+			index = 0
+			topThird = bisect( 2/3, self.emotions[i] )
+			bottomThird = bisect( 1/3, self.emotions[i])
+			for j in range(0, len( self.images ) ):
+				bit = 0
+				if( self.emotions[i][j] > topThird ):
+					self.pos_imgs[i].append( self.images[j] )
+					bit = 1
+				elif( self.emotions[i][j] <= bottomThird ):
+					self.neg_imgs[i].append( self.images[j] )
+				self.emo_bitmap[j].append( bit )
+		low_emo = self.find_low_emotion( )
+		for e in low_emo:
+			self.neg_all_imgs.append(e + "\n")
+		return
+	
+	"""
+	Writes the positive and negative file data to files in the data directory
+	"""
+	def write_pos_neg_files( self ):
+		assert( len(self.neg_names) == len(self.pos_imgs) )
+		assert( len(self.emo_names) == len(self.pos_imgs) )
+		assert( self.data_dir is not None )
+		for i in range( 0, len(pos_imgs) ):
+			fplus = open( data_dir + "Positive_" + emo_names[i], "w" )
+			fminus = open( data_dir + "Negative_" + emo_names[i], "w" )
+			for img in pos_imgs[i]:
+				fplus.write( img + "\n" )
+			for img in neg_imgs[i]:
+				fminus.write( img + "\n" )
+		fneg = open( data_dir + "Negative_all", "w" )
+		for img in neg_all_imgs:
+			fneg.write( img + "\n" )
 		fplus.close()
 		fminus.close()
 
-		print( emo_names[i] + ": " + images[index] )
-	fneg = open( data_dir + "Negative_all", "w" )
-	low_emo = lowEmotion( images, scores )
-	#fneg.write( lowEmotion( images, scores ) )
-	for e in low_emo:
-		fneg.write( e + "\n")
-	fneg.close()
 
-if __name__ == "__main__":
-    main()
-
-
-
+	"""
+	Returns a list of all images that are below the cutoff percentage
+	"""
+	def find_low_emotion( self, cutoff = 2/3 ):
+		assert( self.emotions is not None )
+		assert( self.scores is not None )
+		assert( self.images is not None )
+		assert( len( self.scores ) == len( self.images ) )
+		l = len( self.scores )
+		avgs = list( map ( (lambda x: bisect( cutoff, x) ) , self.emotions) )
+		#print( avgs )
+		low_emo = []
+		for i in range(0, l):
+			is_low_emo = True
+			for j in range( 0, len( self.scores[i]) ):
+				if( self.scores[i][j] > avgs[j] ):
+					is_low_emo = False
+					break
+			if( is_low_emo ):
+				low_emo.append( self.images[i] )
+		return low_emo

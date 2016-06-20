@@ -34,29 +34,33 @@ def main():
 	n_records = 0
 
 	for x in submissions:
-		# Make sure each image is a single .jpg, not an album or a .gif
-		if( x.url[-4:] != ".jpg" ):
+		try:
+			# Make sure each image is a single .jpg, not an album or a .gif
+			if( x.url[-4:] != ".jpg" ):
+				continue
+
+			comment_tree = x.comments
+			comment_concat = ""
+			# TODO: use n_comments, or the number of root comments, whichever is smaller
+			num_comments = len( comment_tree ) - 1
+			if( num_comments > n_comments ):
+				num_comments = n_comments
+			print( num_comments )
+			sys.stdout.flush()
+			for i in range( 0, num_comments ):
+				comment_concat += str( vars( comment_tree[i] )['body'] ) + "\n"
+
+			tone = t.tone_analyze( comment_concat )
+			emotions = t.extract_emotions( tone )
+			info = x.url + "\n" + str( ( t.emotions_num_extract( emotions ) )) + "\n"
+			f = random.choice( [test, train] )
+			f.write( info )
+			print("Wrote record {}".format( n_records) )
+			sys.stdout.flush()
+			n_records += 1
+		except:
+			print( sys.exc_info() )
 			continue
-
-		comment_tree = x.comments
-		comment_concat = ""
-		# TODO: use n_comments, or the number of root comments, whichever is smaller
-		num_comments = len( comment_tree ) - 1
-		if( num_comments > n_comments ):
-			num_comments = n_comments
-		print( num_comments )
-		sys.stdout.flush()
-		for i in range( 0, num_comments ):
-			comment_concat += str( vars( comment_tree[i] )['body'] ) + "\n"
-
-		tone = t.tone_analyze( comment_concat )
-		emotions = t.extract_emotions( tone )
-		info = x.url + "\n" + str( ( t.emotions_num_extract( emotions ) )) + "\n"
-		f = random.choice( [test, train] )
-		f.write( info )
-		print("Wrote record {}".format( n_records) )
-		sys.stdout.flush()
-		n_records += 1
 	train.close()
 	test.close()
 

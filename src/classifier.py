@@ -72,6 +72,11 @@ class VisualTrainer:
 	# deletes a classifier
 	def del_classifier( self, classifier_id ):
 			self.v.delete_classifier( classifier_id)
+
+	def classify_zip_file( self, f_name ):
+		img_file = open( f_name, "rb" )
+		to_ret = self.v.classify( images_file = img_file, classifier_ids = self.get_classifier_ids(), threshold = 0.0 )
+		return to_ret
 		
 
 	"""
@@ -81,8 +86,6 @@ class VisualTrainer:
 	"""
 	def classify_single_image( self, url, classifier_ids = None ):
 		to_ret = self.v.classify( images_url = url, classifier_ids = self.get_classifier_ids(), threshold = 0.0)
-		#print( json.dumps( to_ret, indent=2 ) )
-		self.pp_classify_response( to_ret )
 		return to_ret
 
 	"""
@@ -157,7 +160,13 @@ def main( args ):
 
 	vis = VisualTrainer()
 	for a in args:
-		vis.classify_single_image(a)
+		if( a[-4:] == ".zip" ):
+			vis.classify_zip_file( a )
+		elif( a[-4:] == ".jpg" ):
+			vis.classify_single_image( a )
+		else:
+			print( "Invalid file type, continuing" )
+			continue
 
 if( __name__ == "__main__" ):
 	main( sys.argv[1:] )
