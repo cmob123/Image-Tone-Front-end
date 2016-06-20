@@ -48,25 +48,44 @@ def dataDistance( score1, score2 ):
 	s = sum( map( (lambda x, y: (x - y)**2 ), score1, score2))
 	return  s**(0.5)
 
-# returns all images that are in the bottom 50% of all emotion scores
-def lowEmotion( images, scores ):
-	l = len( scores )
-	emotions = numpy.transpose( scores )
-	avgs = list( map ( (lambda x: bisect( 2/3, x) ) , emotions) )
-	low_emo = []
-	for i in range(0, l):
-		is_low_emo = True
-		for j in range( 0, len(scores[i])):
-			if( scores[i][j] > avgs[j] ):
-				is_low_emo = False
-				break
-		if( is_low_emo ):
-			low_emo.append( images[i] )
-	return low_emo
-
-def bisect( prop, scores ):
-	length = len(scores)
-	sorted = numpy.sort( scores )
+"""
+returns the number that forms the percentile, based on the value of prop
+For example, if prop is 0.5, the number returned will be approximately the median
+If prop is 0.33, the number returned will be larger than 33% of the sample, and smaller than 67%
+"""
+def bisect( prop, num_list ):
+	assert( prop <= 1.0 )
+	assert( prop >= 0.0 )
+	length = len( num_list )
+	sorted = numpy.sort( num_list )
 	return sorted[int( length * prop )]
-	
+
+"""
+Calculates the correlation coefficient between two lists of data
+The lists should of course be the same length
+"""
+def correlation_coefficient( arr1, arr2 ):
+	length = len( arr1 )
+	assert( length == len( arr2 ) )
+	x_sum = 0
+	y_sum = 0
+	xx_sum = 0
+	yy_sum = 0
+	xy_sum = 0
+	for j in range( 0, length ):
+		x = arr1[j]
+		y = arr2[j]
+		x_sum += x
+		y_sum += y
+		xy_sum += x*y
+		xx_sum += x*x
+		yy_sum += y*y
+	x_mean = x_sum / length
+	y_mean = y_sum / length
+	new_coefficient = (xy_sum) - (length * x_mean * y_mean)
+	#print("Numerator is {}".format( new_coefficient ) )
+	denom = ( (xx_sum) - (length * x_mean * x_mean ) )**(1/2)
+	denom *=( (yy_sum) - (length * y_mean * y_mean ) )**(1/2)
+	#print("Denom is {}".format( denom ) )
+	return new_coefficient / denom
 
