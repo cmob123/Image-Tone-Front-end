@@ -61,7 +61,6 @@ body {
 }
 #resultsDiv {
     width: 530px;
-    background: rgba(0, 0, 0, 0.6); /* translucent black */
 }
 #list {
     list-style-type: none;

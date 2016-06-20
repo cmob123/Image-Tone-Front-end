@@ -26,6 +26,7 @@ function analyzeTone(){
 	document.getElementById("tone5").innerHTML = "Tone6: 65%";
 
 	// for some reason the next 2 lines breaks the program
+	document.getElementById("resultsDiv").style.background = "rgba(0, 0, 0, 0.6)";
 	//document.getElementById("resultsDiv").style.background-color = "black";
 	//document.getElementById("resultsDiv").style.opacity = ".5";
 }
