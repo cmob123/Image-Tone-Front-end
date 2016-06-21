@@ -36,7 +36,7 @@ def main():
 	for x in submissions:
 		try:
 			# Make sure each image is a single .jpg, not an album or a .gif
-			if( x.url[-4:] != ".jpg" ):
+			if( (x.url[-4:] != ".jpg") and (x.url[-4:] != ".png") ):
 				continue
 
 			comment_tree = x.comments
@@ -47,14 +47,24 @@ def main():
 				num_comments = n_comments
 			print( num_comments )
 			sys.stdout.flush()
+			f = random.choice( [test, train] )
+			f.write( x.url )
+			f.write( "\n" )
 			for i in range( 0, num_comments ):
-				comment_concat += str( vars( comment_tree[i] )['body'] ) + "\n"
+				try:
+					string = str( vars( comment_tree[i] )['body'] )
+					f.write(string)
+					f.write("\n")
+					comment_concat += string
+				except:
+					#print( sys.exc_info() )
+					#print( "Problems were encountered appending {}".format(vars( comment_tree[i])['body'] ) )
+					continue
 
 			tone = t.tone_analyze( comment_concat )
 			emotions = t.extract_emotions( tone )
-			info = x.url + "\n" + str( ( t.emotions_num_extract( emotions ) )) + "\n"
-			f = random.choice( [test, train] )
-			f.write( info )
+			f.write( str( t.emotions_num_extract( emotions ) ) )
+			f.write("\n==========================================================\n")
 			print("Wrote record {}".format( n_records) )
 			sys.stdout.flush()
 			n_records += 1
