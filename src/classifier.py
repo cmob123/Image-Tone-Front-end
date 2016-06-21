@@ -85,7 +85,11 @@ class VisualTrainer:
 	As a side effect, pretty prints the classification details
 	"""
 	def classify_single_image( self, url, classifier_ids = None ):
-		to_ret = self.v.classify( images_url = url, classifier_ids = self.get_classifier_ids(), threshold = 0.0)
+		my_classifiers = classifier_ids
+		if( my_classifiers == None ):
+			my_classifiers = self.get_classifier_ids()
+		to_ret = self.v.classify( images_url = url, classifier_ids = my_classifiers, threshold = 0.0)
+		self.pp_classify_response( to_ret )
 		return to_ret
 
 	"""
@@ -98,10 +102,15 @@ class VisualTrainer:
 	Someone should fix this later
 	"""
 	def pp_classify_response( self, some_json):
-		for i in some_json["images"]:
-			for c in i["classifiers"]:
-				for cl in c["classes"]:
-					print("{} : {}".format( cl["class"], cl["score"] ) )
+		try:
+			for i in some_json["images"]:
+				for c in i["classifiers"]:
+					for cl in c["classes"]:
+						print("{} : {}".format( cl["class"], cl["score"] ) )
+		except KeyError as e:
+			print("KeyError when printing the classify response")
+			print("Maybe something went wrong in classification?")
+			print( str( e ) )
 
 
 	# Delete all classifiers. They are unrecoverable
@@ -119,15 +128,22 @@ class VisualTrainer:
 		for c in class_list["classifiers"]:
 			self.v.delete_classifier( c["classifier_id"] )
 
+	# Return a list of all classifier ids known to Watson, excluding default
 	def get_classifier_ids( self ):
 		to_ret = []
-		class_list = self.v.list_classifiers( verbose = True )
-		for c in class_list["classifiers"]:
-			to_ret.append( c["classifier_id"] )
-		return to_ret
+		class_list = self.v.list_classifiers( verbose = False )
+		try:
+			for c in class_list["classifiers"]:
+				if( c["status"] == "ready" ):
+					to_ret.append( c["classifier_id"] )
+			return to_ret
+		except KeyError as e:
+			print( "Error in fetching classifier ids" )
+			print( str( e ) )
+			return to_ret
 
 	# Start from the ground up, nuke all classifiers and rebuild them.
-	# This should only be called when the data has been updated, for instance
+	# There are very few good reasons to call this. The primary one being that the data has been updated
 	def rebuild_classifiers( self ):
 		self.del_aall_classifiers()
 		vis.new_classifier(
