@@ -18,6 +18,7 @@ class VisualTrainer:
 	
 	def __init__(self):
 		self.v = VisualRecognitionV3('2016-05-20', api_key=apikey)
+		self.classifier_list = None
 	
 	"""
 	Build a new classifier with the given name.
@@ -69,13 +70,15 @@ class VisualTrainer:
 	def list_classifiers(self):
 		print( json.dumps( self.v.list_classifiers( verbose= True ), indent=4) )
 
+	def set_classifiers( self, c_list ):
+		self.classifier_list = c_list
+
 	# deletes a classifier
 	def del_classifier( self, classifier_id ):
 			self.v.delete_classifier( classifier_id)
 
-	def classify_zip_file( self, f_name ):
-		img_file = open( f_name, "rb" )
-		to_ret = self.v.classify( images_file = img_file, classifier_ids = self.get_classifier_ids(), threshold = 0.0 )
+	def classify_zip_file( self, open_file ):
+		to_ret = self.v.classify( images_file = img_file, classifier_ids = self.classifier_list, threshold = 0.0 )
 		return to_ret
 		
 
@@ -84,12 +87,9 @@ class VisualTrainer:
 	Returns a json struct containing all classification probabilities, no matter how small
 	As a side effect, pretty prints the classification details
 	"""
-	def classify_single_image( self, url, classifier_ids = None ):
-		my_classifiers = classifier_ids
-		if( my_classifiers == None ):
-			my_classifiers = self.get_classifier_ids()
-		to_ret = self.v.classify( images_url = url, classifier_ids = my_classifiers, threshold = 0.0)
-		self.pp_classify_response( to_ret )
+	def classify_single_image( self, url ):
+		to_ret = self.v.classify( images_url = url, classifier_ids = self.classifier_list, threshold = 0.0)
+		#self.pp_classify_response( to_ret )
 		return to_ret
 
 	"""
@@ -104,13 +104,16 @@ class VisualTrainer:
 	def pp_classify_response( self, some_json):
 		try:
 			for i in some_json["images"]:
+				if( "error" in i ):
+					print( "Error in image" )
+					continue
 				for c in i["classifiers"]:
 					for cl in c["classes"]:
 						print("{} : {}".format( cl["class"], cl["score"] ) )
 		except KeyError as e:
 			print("KeyError when printing the classify response")
 			print("Maybe something went wrong in classification?")
-			print( str( e ) )
+			print( e )
 
 
 	# Delete all classifiers. They are unrecoverable
@@ -173,16 +176,24 @@ class VisualTrainer:
 				"../data/neg-sadness.zip")
 
 def main( args ):
-
 	vis = VisualTrainer()
-	for a in args:
-		if( a[-4:] == ".zip" ):
-			vis.classify_zip_file( a )
-		elif( a[-4:] == ".jpg" ):
-			vis.classify_single_image( a )
+	vis.set_classifiers( vis.get_classifier_ids() )
+	text = input( "Enter an image link or zip file to classify -> " )
+	while( text != "" ):
+		print( text )
+		if( text[-4:] == ".zip" ):
+			f = open( text, "rb" )
+			j = vis.classify_zip_file( f )
+			vis.pp_classify_response( j )
+
+		elif( text[-4:] == ".jpg" or text[-4:] == ".png" ):
+			j= vis.classify_single_image( text )
+			print( json.dumps( j, indent=2 ) )
+			vis.pp_classify_response( j )
 		else:
-			print( "Invalid file type, continuing" )
-			continue
+			print( "Sorry, i didn't understand that file type" )
+		text = input( "Enter an image link or zip file to classify -> " )
+
 
 if( __name__ == "__main__" ):
 	main( sys.argv[1:] )
