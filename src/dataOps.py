@@ -83,9 +83,16 @@ def correlation_coefficient( arr1, arr2 ):
 	x_mean = x_sum / length
 	y_mean = y_sum / length
 	new_coefficient = (xy_sum) - (length * x_mean * y_mean)
-	#print("Numerator is {}".format( new_coefficient ) )
+	print("Numerator is {}".format( new_coefficient ) )
 	denom = ( (xx_sum) - (length * x_mean * x_mean ) )**(1/2)
 	denom *=( (yy_sum) - (length * y_mean * y_mean ) )**(1/2)
-	#print("Denom is {}".format( denom ) )
+	print("Denom is {}".format( denom ) )
 	return new_coefficient / denom
+
+def print_info( data ):
+	print("Length: {}".format( len(data) ) )
+	print("Min: {}".format( numpy.min(data) ) )
+	print("Max: {}".format( numpy.max(data) ) )
+	print("Mean: {}".format( numpy.mean(data) ) )
+	return
 
