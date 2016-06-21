@@ -6,6 +6,11 @@ import array
 
 test_file = "test.txt"
 
+"""
+This file is used to test our classifiers.
+It's pretty fragile, but powerful.
+"""
+
 def main():
 	#TODO: Check if this is already done
 	classify_images()
@@ -49,6 +54,7 @@ def classify_images():
 	test_i = ImageRanker( test_file, "../data/" )
 	images = test_i.images
 	v = VisualTrainer()
+	v.set_classifiers( v.get_classifier_ids() )
 	c_scores = []
 	controls = []
 	a_scores = test_i.scores

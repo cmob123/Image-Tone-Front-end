@@ -19,6 +19,7 @@ class ImageRanker:
 		text = f.readline( )
 		self.images = []
 		self.scores = []
+		self.title_scores = []
 		#Pull scores and images out of the file
 		while( text != "" ):
 			self.images.append( text.strip() )
@@ -28,10 +29,16 @@ class ImageRanker:
 			else:
 				print( "Mismatch between number of images and number of scores, check your data")
 				return
+			if( text != "" ):
+				self.title_scores.append(eval ( "numpy.array(" +text + ")" ) )
+			else:
+				print( "Mismatch between number of images and number of scores, check your data")
+				return
 			text = f.readline()
 
 		# Turns out that this is handy to have.
 		self.emotions = numpy.transpose( self.scores )
+		self.title_emotions = numpy.transpose( self.scores )
 		self.sort_pos_neg()
 		return
 
@@ -70,18 +77,18 @@ class ImageRanker:
 	Writes the positive and negative file data to files in the data directory
 	"""
 	def write_pos_neg_files( self ):
-		assert( len(self.neg_names) == len(self.pos_imgs) )
+		assert( len(self.neg_imgs) == len(self.pos_imgs) )
 		assert( len(self.emo_names) == len(self.pos_imgs) )
 		assert( self.data_dir is not None )
-		for i in range( 0, len(pos_imgs) ):
-			fplus = open( data_dir + "Positive_" + emo_names[i], "w" )
-			fminus = open( data_dir + "Negative_" + emo_names[i], "w" )
-			for img in pos_imgs[i]:
+		for i in range( 0, len(self.pos_imgs) ):
+			fplus = open( self.data_dir + "Positive_" + self.emo_names[i], "w" )
+			fminus = open( self.data_dir + "Negative_" + self.emo_names[i], "w" )
+			for img in self.pos_imgs[i]:
 				fplus.write( img + "\n" )
-			for img in neg_imgs[i]:
+			for img in self.neg_imgs[i]:
 				fminus.write( img + "\n" )
-		fneg = open( data_dir + "Negative_all", "w" )
-		for img in neg_all_imgs:
+		fneg = open( self.data_dir + "Negative_all", "w" )
+		for img in self.neg_all_imgs:
 			fneg.write( img + "\n" )
 		fplus.close()
 		fminus.close()
@@ -108,3 +115,4 @@ class ImageRanker:
 			if( is_low_emo ):
 				low_emo.append( self.images[i] )
 		return low_emo
+

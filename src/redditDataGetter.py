@@ -19,7 +19,6 @@ training = "train2.txt"
 testing = "test2.txt"
 
 def main():
-
 	print( "Gathering submissions" )
 	agent = praw.Reddit( user_agent='Comment-picture associator' )
 	submissions = agent.get_subreddit( 'pics' ).get_top_from_all( limit=n_posts )
@@ -32,8 +31,12 @@ def main():
 	test = open(data_dir + testing, "w" )
 	t = ToneAnalyzer()
 	n_records = 0
+	n_submissions = 0
 
 	for x in submissions:
+		print( "Trying submission {}".format( n_submissions ) )
+		sys.stdout.flush()
+		n_submissions += 1
 		try:
 			# Make sure each image is a single .jpg, not an album or a .gif
 			if( (x.url[-4:] != ".jpg") and (x.url[-4:] != ".png") ):
@@ -45,16 +48,15 @@ def main():
 			num_comments = len( comment_tree ) - 1
 			if( num_comments > n_comments ):
 				num_comments = n_comments
-			print( num_comments )
-			sys.stdout.flush()
 			f = random.choice( [test, train] )
 			f.write( x.url )
 			f.write( "\n" )
 			for i in range( 0, num_comments ):
 				try:
 					string = str( vars( comment_tree[i] )['body'] )
-					f.write(string)
-					f.write("\n")
+					# Uncomment to write the comment to the file (which makes it impossible to parse of course)
+					#f.write(string)
+					#f.write("\n")
 					comment_concat += string
 				except:
 					#print( sys.exc_info() )
@@ -62,15 +64,20 @@ def main():
 					continue
 
 			tone = t.tone_analyze( comment_concat )
+			title_tone = t.tone_analyze( x.title )
 			emotions = t.extract_emotions( tone )
+			title_emotions = t.extract_emotions( title_tone )
 			f.write( str( t.emotions_num_extract( emotions ) ) )
-			f.write("\n==========================================================\n")
+			f.write( "\n" )
+			#f.write( str( t.emotions_num_extract( title_emotions ) ) )
+			#f.write( "\n")
 			print("Wrote record {}".format( n_records) )
 			sys.stdout.flush()
 			n_records += 1
 		except:
 			print( sys.exc_info() )
 			continue
+		sys.stdout.flush()
 	train.close()
 	test.close()
 

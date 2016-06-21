@@ -4,6 +4,7 @@ from watson_developer_cloud import VisualRecognitionV3
 #from visual_recognition_v3 import VisualRecognitionV3
 import requests
 import sys
+from imageRanker import *
 
 
 
@@ -31,14 +32,15 @@ class VisualTrainer:
 
 	Prompts before constructing the new classifier
 	"""
-	def new_classifier( self, classifier_name, class_names, zipfiles, neg_zipfile ):
-		print( "Are you sure you want to create a new classifier" )
-		print( "Current classifier list is:" )
-		self.list_classifiers()
-		text = input( "Type 'YES' to continue creating classifier \"{}\": ".format( classifier_name ) )
-		if( text != "YES" ):
-			print( "exiting, no classifier created" )
-			return None
+	def new_classifier( self, classifier_name, class_names, zipfiles, neg_zipfile, prompt = True ):
+		if( prompt ):
+			print( "Are you sure you want to create a new classifier" )
+			print( "Current classifier list is:" )
+			self.list_classifiers()
+			text = input( "Type 'YES' to continue creating classifier \"{}\": ".format( classifier_name ) )
+			if( text != "YES" ):
+				print( "exiting, no classifier created" )
+				return None
 
 		assert( len( class_names ) == len( zipfiles ) )
 		n_classes = len( class_names )
@@ -53,13 +55,13 @@ class VisualTrainer:
 			exec( "{} = open( \"{}\", \"rb\")".format( zipf_name, zipfiles[i] ))
 			exec( "open_files.append( {} )".format( zipf_name ) )
 			arguments_str += "{}_positive_examples={}, ".format( class_names[i], zipf_name )
-			print( arguments_str )
+			#print( arguments_str )
 
 		neg_zip = open( neg_zipfile, "rb" )
 		open_files.append( neg_zip )
 		arguments_str += "negative_examples=neg_zip"
 		exec_str = "ret_json = self.v.create_classifier( \"{}\", {} )".format( classifier_name, arguments_str)
-		print( exec_str )
+		#print( exec_str )
 		exec( exec_str )
 		for f in open_files:
 			f.close()
@@ -148,28 +150,38 @@ class VisualTrainer:
 	# Start from the ground up, nuke all classifiers and rebuild them.
 	# There are very few good reasons to call this. The primary one being that the data has been updated
 	def rebuild_classifiers( self ):
-		self.del_aall_classifiers()
-		vis.new_classifier(
+		print("This will delete all existing classifiers and retrain new ones")
+		text = input("Type \'YES\' if you are sure you want to do this: ")
+		if( text != "YES" ):
+			print("Canceling, nothing deleted or created")
+			return
+		print("Here we go")
+		self.del_all_classifiers(prompt = False)
+		self.new_classifier(
 				"angerclass",
 				["anger"],
 				["../data/anger.zip"],
-				"../data/neg-anger.zip")
-		vis.new_classifier(
+				"../data/neg-anger.zip",
+				False)
+		self.new_classifier(
 				"disgustclass",
 				["disgust"],
 				["../data/disgust.zip"],
-				"../data/neg-disgust.zip")
-		vis.new_classifier(
+				"../data/neg-disgust.zip",
+				False)
+		self.new_classifier(
 				"fearclass",
 				["fear"],
 				["../data/fear.zip"],
-				"../data/neg-fear.zip")
-		vis.new_classifier(
+				"../data/neg-fear.zip",
+				False)
+		self.new_classifier(
 				"joyclass",
 				["joy"],
 				["../data/joy.zip"],
-				"../data/neg-joy.zip")
-		vis.new_classifier(
+				"../data/neg-joy.zip",
+				False)
+		self.new_classifier(
 				"sadnessclass",
 				["sadness"],
 				["../data/sadness.zip"],
@@ -177,6 +189,10 @@ class VisualTrainer:
 
 def main( args ):
 	vis = VisualTrainer()
+	i = ImageRanker( "train.txt", "../data/" )
+	vis.rebuild_classifiers( )
+	vis.list_classifiers()
+	return
 	vis.set_classifiers( vis.get_classifier_ids() )
 	text = input( "Enter an image link or zip file to classify -> " )
 	while( text != "" ):
