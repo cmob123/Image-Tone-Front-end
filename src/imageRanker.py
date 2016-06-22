@@ -8,35 +8,25 @@
 
 import numpy
 from dataOps import *
+from tone import data_names
+from redditDataSaver import fieldnames
 
 class ImageRanker:
-	emo_names = ["Anger", "Disgust", "Fear", "Joy", "Sadness"]
 
-	def __init__( self, image_file_name = "train.txt", data_dir = "../data/" ):
+	def __init__( self, csv_file_name = "data.csv", data_dir = "../data/" ):
 		self.data_dir = data_dir
-		image_file = data_dir + image_file_name
+		csvfile = data_dir + image_file_name
 		f = open( image_file, "r" )
-		text = f.readline( )
 		self.images = []
 		self.scores = []
 		self.title_scores = []
-		#Pull scores and images out of the file
-		while( text != "" ):
-			self.images.append( text.strip() )
-			text = f.readline()
-			if( text != "" ):
-				self.scores.append(eval ( "numpy.array(" +text + ")" ) )
-			else:
-				print( "Mismatch between number of images and number of scores, check your data")
-				return
-			if( text != "" ):
-				self.title_scores.append(eval ( "numpy.array(" +text + ")" ) )
-			else:
-				print( "Mismatch between number of images and number of scores, check your data")
-				return
-			text = f.readline()
+		csv_reader = csv.DictReader(csvfile)
+		print( csv_reader.fieldnames )
+		for row in csv_reader:
+			self.images.append( row['url'] )
+			self.scores.append( row['comment_data'] )
+			self.title_scores.append( row['title_data'] )
 
-		# Turns out that this is handy to have.
 		self.emotions = numpy.transpose( self.scores )
 		self.title_emotions = numpy.transpose( self.scores )
 		self.sort_pos_neg()
@@ -45,8 +35,6 @@ class ImageRanker:
 	# Saves the images in the top and bottom 1/3
 	# Any image not in *any* top 1/3 gets saved in a Negative_all file
 	# As a side effect, prints the images with the highest score for each emotion
-
-	# FUTURE JESSE: YOU NEED TO USE THE emo_bitmap COMPARED AGAINST [ 1/3 ] * 5 TO DETERMINE THE CLASSIFIERS EFFECTIVENESS
 	def sort_pos_neg( self ):
 		self.pos_imgs = [None]*5
 		self.neg_imgs = [None]*5
