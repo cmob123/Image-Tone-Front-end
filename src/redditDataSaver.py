@@ -3,6 +3,7 @@ import json
 import time
 import sys
 import csv
+import random
 from pprint import pprint
 from tone import ToneAnalyzer
 
@@ -17,32 +18,35 @@ def main():
 	save_submissions( n_posts = 10000, n_comments = 25, data_dir = "../data/", data_fn = "data.csv")
 
 
-def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", data_fn = "data.csv" ):
-	print( "Gathering submissions" )
+def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn = "train.csv", test_fn = "test.csv" ):
+	print( "Gathering the top {} posts from r/pics".format( n_posts ) )
 	agent = praw.Reddit( user_agent='Comment-picture associator' )
 	submissions = agent.get_subreddit( 'pics' ).get_top_from_all( limit=n_posts )
-	print( "Finished getting submissions" )
 # I'm not sure why these flush() calls are needed, but if they aren't there, nothing gets printed until the end
 	sys.stdout.flush()
 
 	# change to a if we want to append instead of overwrite
-	data_file = open(data_dir + data_fn, "w", newline='' )
-	csv_writer = csv.DictWriter( data_file, fieldnames=fieldnames)
-	csv_writer.writeheader()
+	train_file = open(data_dir + train_fn, "w", newline='' )
+	train_csv_writer = csv.DictWriter( train_file, fieldnames=fieldnames)
+	train_csv_writer.writeheader()
+	test_file = open(data_dir + test_fn, "w", newline='' )
+	test_csv_writer = csv.DictWriter( test_file, fieldnames=fieldnames)
+	test_csv_writer.writeheader()
 	t = ToneAnalyzer()
-	n_records = 0
-	n_submissions = 0
+	records_count = 0
+	posts_count = 0
 	# This guarantees that we will always get the same testing and training data
 
+	random.seed(0)
 	for x in submissions:
-		print( "Trying submission {}".format( n_submissions ) )
+		print( "Retriving post {}".format( posts_count ) )
 		sys.stdout.flush()
-		n_submissions += 1
-		try:
-			# Make sure each image is a single .jpg, not an album or a .gif
-			if( (x.url[-4:] != ".jpg") and (x.url[-4:] != ".png") ):
-				continue
+		posts_count += 1
+		# Make sure each image is a single image, not an album or a .gif
+		if( (len(x.url) < 4) or ((x.url[-4:] != ".jpg") and (x.url[-4:] != ".png"))):
+			continue
 
+		try:
 			comment_tree = x.comments
 			comment_concat = ""
 			# TODO: use n_comments, or the number of root comments, whichever is smaller
@@ -50,33 +54,37 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", data_fn =
 			if( num_comments > n_comments ):
 				num_comments = n_comments
 			for i in range( 0, num_comments ):
-				try:
-					string = str( vars( comment_tree[i] )['body'] )
-					comment_concat += string
-				except:
-					print( sys.exc_info() )
-					continue
+				if( "body" in vars( comment_tree[i] ) ):
+					comment_concat += str( vars( comment_tree[i])["body"])
+		except:
+			print( "Error getting comments, are we being throttled by reddit?" )
+			print( sys.exc_info() )
+			if( comment_concat == "" ):
+				continue
 
-			tone = t.tone_analyze( comment_concat )
-			comment_data = t.tone_all_num_extract( tone )
-			title_tone = t.tone_analyze( x.title )
-			title_data = t.tone_all_num_extract( title_tone )
-			post_data = {'arbitrary_id': n_records, 'url': x.url, 'title': x.title, 'title_data': title_data, 'comments': comment_concat, 'comment_data': comment_data}
+		tone = t.tone_analyze( comment_concat )
+		comment_data = t.tone_all_num_extract( tone )
+		title_tone = t.tone_analyze( x.title )
+		title_data = t.tone_all_num_extract( title_tone )
+		post_data = {'arbitrary_id': records_count, 'url': x.url, 'title': x.title, 'title_data': title_data, 'comments': comment_concat, 'comment_data': comment_data}
+			
+		try:
+			csv_writer = random.choice( [train_csv_writer, test_csv_writer] )
 
 			csv_writer.writerow( post_data )
-
-
-			print("Wrote record {}".format( n_records) )
-			sys.stdout.flush()
-			n_records += 1
 		except UnicodeEncodeError as e:
 			print("Unicode error, cannot save this submission, sorry")
 			continue
 		except:
-			print(sys.exc_info())
+			print("Something went wrong processing this post")
+			print(sys.exc_info()[0])
 			continue
+
+		print("Wrote record {}".format( records_count) )
+		records_count += 1
 		sys.stdout.flush()
-	data_file.close()
+	train_file.close()
+	test_file.close()
 
 if __name__ == "__main__":
     main()

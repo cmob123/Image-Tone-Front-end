@@ -66,6 +66,7 @@ class VisualTrainer:
 		exec( exec_str )
 		for f in open_files:
 			f.close()
+		print( "Finished creating classifier {}".format( classifier_name ) )
 		return
 
 	# Prints an unformatted, verbose list of all classifiers
@@ -150,7 +151,7 @@ class VisualTrainer:
 
 	# Start from the ground up, nuke all classifiers and rebuild them.
 	# There are very few good reasons to call this. The primary one being that the data has been updated
-	def rebuild_classifiers( self ):
+	def rebuild_classifiers( self, data_dir = "../data/" ):
 		print("This will delete all existing classifiers and retrain new ones")
 		text = input("Type \'YES\' if you are sure you want to do this: ")
 		if( text != "YES" ):
@@ -159,8 +160,8 @@ class VisualTrainer:
 		print("Here we go")
 		self.del_all_classifiers(prompt = False)
 		# make tone names lowercase
-		lc_tone_names = map( (lambda x: x.lower()), tone_names )
-		for tone in lc_tone_names:
+		# lc_tone_names = map( (lambda x: x.lower()), tone_names )
+		for tone in tone_names:
 			classifier_name = tone + "class"
 			class_name = tone
 			filename = "../data/" + tone + ".zip"

@@ -30,8 +30,8 @@ class ToneAnalyzer:
 	# Occasionally, this fails, since Watson is rate limiting us
 	# In that case, we just want to wait 60 seconds and try again
 	def tone_analyze( self, text ):
-		raw_json = self.tone_analyzer.tone( text = text )
 		try:
+			raw_json = self.tone_analyzer.tone( text = text )
 			return raw_json['document_tone']
 		except:
 			print( raw_json )
