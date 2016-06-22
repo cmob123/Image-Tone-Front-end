@@ -2,6 +2,19 @@ import json
 import time
 from watson_developer_cloud import ToneAnalyzerV3
 
+tone_names = ["Anger", 
+	"Disgust", 
+	"Fear",
+	"Joy", 
+	"Sadness", 
+	"Analytical", 
+	"Confident", 
+	"Tentative", 
+	"Openness", 
+	"Conscientiousness", 
+	"Extraversion", 
+	"Agreeableness", 
+	"Emotional Range"]
 # A class to analyze tone, some sort of ... Tone Analyzer
 # Really only handles emotion data
 class ToneAnalyzer:
@@ -27,6 +40,18 @@ class ToneAnalyzer:
 			# This is fine, nothing wrong here
 			return self.tone_analyze( text )
 
+	def tone_all_num_extract(self, doc_tone):
+		try:
+			to_ret = []
+			for t in doc_tone['tone_categories']:
+				for e in t['tones']:
+					#print( "{} : {}".format( e['tone_name'], e['score'] ) )
+					to_ret.append( e['score'] )
+			return to_ret
+		except:
+			print("Failed to extract tone data")
+			print( sys.exc_info() )
+
 	
 	# Discards writing style and personality data, returning
 	# only emotion data
@@ -47,4 +72,3 @@ class ToneAnalyzer:
 		for e in emotions:
 			nums.append( e['score'] )
 		return nums
-

@@ -5,6 +5,7 @@ from watson_developer_cloud import VisualRecognitionV3
 import requests
 import sys
 from imageRanker import *
+from tone import tone_names
 
 
 
@@ -157,39 +158,25 @@ class VisualTrainer:
 			return
 		print("Here we go")
 		self.del_all_classifiers(prompt = False)
-		self.new_classifier(
-				"angerclass",
-				["anger"],
-				["../data/anger.zip"],
-				"../data/neg-anger.zip",
-				False)
-		self.new_classifier(
-				"disgustclass",
-				["disgust"],
-				["../data/disgust.zip"],
-				"../data/neg-disgust.zip",
-				False)
-		self.new_classifier(
-				"fearclass",
-				["fear"],
-				["../data/fear.zip"],
-				"../data/neg-fear.zip",
-				False)
-		self.new_classifier(
-				"joyclass",
-				["joy"],
-				["../data/joy.zip"],
-				"../data/neg-joy.zip",
-				False)
-		self.new_classifier(
-				"sadnessclass",
-				["sadness"],
-				["../data/sadness.zip"],
-				"../data/neg-sadness.zip")
+		# make tone names lowercase
+		lc_tone_names = map( (lambda x: x.lower()), tone_names )
+		for tone in lc_tone_names:
+			classifier_name = tone + "class"
+			class_name = tone
+			filename = "../data/" + tone + ".zip"
+			neg_filename = "../data/neg-" + tone + ".zip"
+			self.new_classifier(
+				classifier_name,
+				[class_name],
+				[filename],
+				neg_filename,
+				True )
+		print( "Finished rebuilding classifiers, the new list is: " )
+		self.v.list_classifiers()
 
 def main( args ):
 	vis = VisualTrainer()
-	i = ImageRanker( "train.txt", "../data/" )
+	i = ImageRanker( "data.csv", "../data/" )
 	vis.rebuild_classifiers( )
 	vis.list_classifiers()
 	return
