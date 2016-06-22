@@ -7,25 +7,32 @@
 
 
 import numpy
+import csv
+import ast
 from dataOps import *
-from tone import data_names
+from tone import tone_names
 from redditDataSaver import fieldnames
+
+#fieldnames = ['arbitrary_id', 'url', 'title', 'title_data', 'comments', 'comment_data']
 
 class ImageRanker:
 
 	def __init__( self, csv_file_name = "data.csv", data_dir = "../data/" ):
 		self.data_dir = data_dir
-		csvfile = data_dir + image_file_name
-		f = open( image_file, "r" )
+		csv_fn = data_dir + csv_file_name
+		csvfile = open( csv_fn )
 		self.images = []
-		self.scores = []
-		self.title_scores = []
 		csv_reader = csv.DictReader(csvfile)
 		print( csv_reader.fieldnames )
 		for row in csv_reader:
-			self.images.append( row['url'] )
-			self.scores.append( row['comment_data'] )
-			self.title_scores.append( row['title_data'] )
+			print( row['url'] )
+			print( row['comment_data'] )
+			data_list = ast.literal_eval( row['comment_data'] )
+			print( len( data_list ) )
+			self.images.append( row )
+			input()
+		self.scores = list( map( (lambda x: x['comment_data'] ), self.images ) )
+		self.title_scores = list( map( (lambda x: x['title_data'] ), self.images ) )
 
 		self.emotions = numpy.transpose( self.scores )
 		self.title_emotions = numpy.transpose( self.scores )
@@ -36,71 +43,45 @@ class ImageRanker:
 	# Any image not in *any* top 1/3 gets saved in a Negative_all file
 	# As a side effect, prints the images with the highest score for each emotion
 	def sort_pos_neg( self ):
-		self.pos_imgs = [None]*5
-		self.neg_imgs = [None]*5
+		self.pos_imgs = []*5
+		self.neg_imgs = []*5
 		self.neg_all_imgs = []
-		self.emo_bitmap = []
-		for i in range( 0, len(self.images) ):
-			self.emo_bitmap.append( [] )
-		for i in range(0, len( self.emotions )):
-			self.pos_imgs[i] = []
-			self.neg_imgs[i] = []
-			index = 0
-			topThird = bisect( 2/3, self.emotions[i] )
-			bottomThird = bisect( 1/3, self.emotions[i])
-			for j in range(0, len( self.images ) ):
-				bit = 0
-				if( self.emotions[i][j] > topThird ):
-					self.pos_imgs[i].append( self.images[j] )
-					bit = 1
-				elif( self.emotions[i][j] <= bottomThird ):
-					self.neg_imgs[i].append( self.images[j] )
-				self.emo_bitmap[j].append( bit )
-		low_emo = self.find_low_emotion( )
-		for e in low_emo:
-			self.neg_all_imgs.append(e + "\n")
+		top_third_scores = list( map( (lambda x: bisect(2/3, x)), self.emotions ) )
+		bot_third_scores = list( map( (lambda x: bisect(1/3, x)), self.emotions ) )
+		for img in self.images:
+			# Maybe exec?
+			img_scores = list( img['comment_data'] )
+
+			assert( len(img_scores) == len( self.emotions ) )
+
+			is_low_emo = True
+			for i in range(0, len( img_scores ) ):
+				if( img_scores[i] <= bot_third_scores[i] ):
+					self.neg_imgs[i].append( img ) 
+				elif( img_scores[i] > top_third_scores[i] ):
+					self.pos_imgs[i].append( img )
+					is_low_emo = False
+			if( is_low_emo ):
+				self.neg_all_imgs.append( img )
 		return
 	
 	"""
 	Writes the positive and negative file data to files in the data directory
 	"""
 	def write_pos_neg_files( self ):
-		assert( len(self.neg_imgs) == len(self.pos_imgs) )
-		assert( len(self.emo_names) == len(self.pos_imgs) )
-		assert( self.data_dir is not None )
-		for i in range( 0, len(self.pos_imgs) ):
-			fplus = open( self.data_dir + "Positive_" + self.emo_names[i], "w" )
-			fminus = open( self.data_dir + "Negative_" + self.emo_names[i], "w" )
-			for img in self.pos_imgs[i]:
-				fplus.write( img + "\n" )
-			for img in self.neg_imgs[i]:
-				fminus.write( img + "\n" )
-		fneg = open( self.data_dir + "Negative_all", "w" )
-		for img in self.neg_all_imgs:
-			fneg.write( img + "\n" )
-		fplus.close()
-		fminus.close()
-
-
-	"""
-	Returns a list of all images that are below the cutoff percentage
-	"""
-	def find_low_emotion( self, cutoff = 2/3 ):
-		assert( self.emotions is not None )
-		assert( self.scores is not None )
-		assert( self.images is not None )
-		assert( len( self.scores ) == len( self.images ) )
-		l = len( self.scores )
-		avgs = list( map ( (lambda x: bisect( cutoff, x) ) , self.emotions) )
-		#print( avgs )
-		low_emo = []
-		for i in range(0, l):
-			is_low_emo = True
-			for j in range( 0, len( self.scores[i]) ):
-				if( self.scores[i][j] > avgs[j] ):
-					is_low_emo = False
-					break
-			if( is_low_emo ):
-				low_emo.append( self.images[i] )
-		return low_emo
-
+		tmp_dir_name = self.data_dir + "tmp/"
+		try:
+			if( not os.path.exists(tmp_dir_name) ):
+				os.makedirs( tmp_dir_name )
+		except OSError as e:
+			print("Could not make temporary directory, no files created:")
+			print( e.exc_info() )
+			return
+		for img in self.images:
+			try:
+				urllib.request.urlretrieve(img['url'], tmp_dir_name+str(img['id']+".jpg"))
+			# catch errors
+			except urllib.error.HTTPError:
+				print ("Error (HTTP): couldn't retrieve image at line", count+1)
+			except urllib.error.URLError:
+				print ("Error (URL): couldn't retrieve image at line", count+1)

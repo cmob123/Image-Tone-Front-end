@@ -71,7 +71,7 @@ class VisualTrainer:
 	# Prints an unformatted, verbose list of all classifiers
 	# Used soley for debugging, probably
 	def list_classifiers(self):
-		print( json.dumps( self.v.list_classifiers( verbose= True ), indent=4) )
+		print( json.dumps( self.v.list_classifiers( verbose = False ), indent=2) )
 
 	def set_classifiers( self, c_list ):
 		self.classifier_list = c_list
