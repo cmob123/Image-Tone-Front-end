@@ -89,6 +89,10 @@ def correlation_coefficient( arr1, arr2 ):
 	print("Denom is {}".format( denom ) )
 	return new_coefficient / denom
 
+
+"""
+prints some useful information about a list of data
+"""
 def print_info( data ):
 	print("Length: {}".format( len(data) ) )
 	print("Min: {}".format( numpy.min(data) ) )
