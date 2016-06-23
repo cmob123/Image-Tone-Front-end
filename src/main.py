@@ -1,73 +1,99 @@
-# Goal of this file, check for existance of image/data file
-#1) Check for existance of train.txt and test.txt
-#1.5) If the don't exist, run reddittest.py to create them
-#2) Import data into internal data structures
-#3) Preprocess the numbers in any way necessary. (Normalize, etc)
-#4) Pass the training data to Watson visual classifiers
-#5) Run testing data, compare answers to baselines
-
-import numpy
-from dataOps import *
-
-data_dir = "../data/"
-
-emo_names = ["Anger", "Disgust", "Fear", "Joy", "Sadness"]
-train_file = data_dir + "train.txt"
-test_file = data_dir + "test.txt"
-
-def main():
-	images = []
-	scores = []
-	emotions = numpy.array([])
-	train = open( train_file, "r" )
-	text = train.readline( )
-	#Pull scores and images out of the file
-	while( text != "" ):
-		images.append( text.strip() )
-		text = train.readline( )
-		if( text != "" ):
-			scores.append(eval ( "numpy.array(" +text + ")" ) )
-		else:
-			print( "Mismatch between number of images and number of scores, check your data")
-			return
-		text = train.readline()
-
-	# Turns out that this is handy to have.
-	emotions = numpy.transpose( scores )
-	
+from redditDataSaver import *
+from imageRanker import *
+from classifier import *
+from testClassifiers import *
 
 
-	# Print the images with the highest score for each emotion
+"""
+r : download data from reddit into csv files
+z : create zip files
+c : retrain classifiers
+t : test classifiers
+l : list existing classifiers
+q : quit
+i : classify single image
+? : view options
 
-	print( "Highest values" )
-	for i in range(0, len(emotions)):
-		fplus = open( data_dir + "Positive_" + emo_names[i], "w" )
-		fminus = open( data_dir + "Negative_" + emo_names[i], "w" )
-		index = 0
-		maxScore = 0
-		topThird = bisect( 2/3, emotions[i] )
-		bottomThird = bisect( 1/3, emotions[i])
-		for j in range(0, len( emotions[i] ) ):
-			if( emotions[i][j] > maxScore ):
-				maxScore = scores[j][i]
-				index = j
-			if( emotions[i][j] > topThird ):
-				fplus.write( images[j] + "\n" )
-			elif( emotions[i][j] <= bottomThird ):
-				fminus.write( images[j] + "\n"  )
-		fplus.close()
-		fminus.close()
+"""
 
-		print( emo_names[i] + ": " + images[index] )
-	fneg = open( data_dir + "Negative_all", "w" )
-	low_emo = lowEmotion( images, scores )
-	#fneg.write( lowEmotion( images, scores ) )
-	for e in low_emo:
-		fneg.write( e + "\n")
-	fneg.close()
+class Main:
+	def __init__(self):
+		self.v = VisualTrainer()
+		self.update_files()
 
-if __name__ == "__main__":
-    main()
+	def main(self):
+		self.view_options()
+		while( True ):
+			text = input( ": " )
+			if( text == "?" ):
+				self.view_options()
+			elif( text == "r" ):
+				self.reddit_save_helper(self.data_dir, self.train_fn, self.test_fn)
+			elif( text == "z" ):
+				i = ImageRanker( self.train_fn, self.data_dir )
+				i.write_pos_neg_files()
+			elif( text == "c" ):
+				self.v.rebuild_classifiers()
+				self.v.set_classifiers( self.v.get_classifier_ids() )
+			elif( text == "l" ):
+				self.v.list_classifiers()
+			elif( text == "q" ):
+				break
+			elif( text == "i" ):
+				url = input(" url? : ")
+				self.v.set_classifiers( self.v.get_classifier_ids() )
+				j = self.v.classify_single_image( url )
+				self.v.pp_classify_response( j )
+			elif( text == "f" ):
+				self.update_files()
+			elif( text == "t" ):
+				self.v.set_classifiers( self.v.get_classifier_ids() )
+				test_classifiers( v, test_fn, data_dir )
+			else:
+				self.view_options()
+
+
+	def view_options(self):
+		print("f : update data directory and file names")
+		print("r : download data from reddit into csv files")
+		print("z : create zip files")
+		print("c : retrain classifiers")
+		print("t : test classifiers")
+		print("l : list existing classifiers")
+		print("i : classify single image")
+		print("? : view options")
+		print("q : quit")
+
+	def update_files(self):
+		self.data_dir = input( "Enter data directory, leave blank for \'../data/\': " )
+		if( self.data_dir == "" ):
+			self.data_dir = "../data/"
+		print(" - Using {} as data directory".format( self.data_dir ) )
+
+		self.train_fn = input( "Enter the name of the training csv file, leave blank for \'train.csv\': " )
+		if( self.train_fn == "" ):
+			self.train_fn = "train.csv"
+		print(" - Using {} as data file".format( self.data_dir + self.train_fn ) )
+
+		self.test_fn = input( "Enter the name of the testing csv file, leave blank for \'test.csv\': " )
+		if( self.test_fn == "" ):
+			self.test_fn = "test.csv"
+		print(" - Using {} as data file".format( self.data_dir + self.test_fn ) )
+		
 
 
 
+
+
+	def reddit_save_helper(self, data_dir, train_fn, test_fn):
+		# TODO: number of files, number of comments
+		n_posts = 1000
+		n_comments = 25
+		print( " - This could take some time, go get lunch or something" )
+		save_submissions( n_posts = n_posts, n_comments = n_comments, data_dir = data_dir, train_fn = train_fn, test_fn = test_fn)
+		print( " - Finished saving reddit data" )
+
+
+if( __name__ == "__main__" ):
+	m = Main()
+	m.main()

@@ -2,15 +2,27 @@ import json
 import time
 from watson_developer_cloud import ToneAnalyzerV3
 
+tone_names = ["Anger", 
+	"Disgust",
+	"Fear",
+	"Joy",
+	"Sadness",
+	"Analytical",
+	"Confident",
+	"Tentative",
+	"Openness",
+	"Conscientiousness",
+	"Extraversion",
+	"Agreeableness",
+	"Emotional_Range"]
 # A class to analyze tone, some sort of ... Tone Analyzer
 # Really only handles emotion data
 class ToneAnalyzer:
 	def __init__(self):
 		self.tone_analyzer = ToneAnalyzerV3(
-				password='UPCemjhdhixD',
-				username='05ec4a1d-6a90-47ab-bf15-f23dc733d9e1',
-				version='2016-05-19'
-				)
+				password = "tbcGKRwREvC8",
+    			username = "0d44496f-11a7-4552-9145-d03acd1bf293",
+				version  = "2016-05-19")
 
 	# Analyzes the text tone
 	# returns a JSON structure containing all document level tone data
@@ -18,8 +30,8 @@ class ToneAnalyzer:
 	# Occasionally, this fails, since Watson is rate limiting us
 	# In that case, we just want to wait 60 seconds and try again
 	def tone_analyze( self, text ):
-		raw_json = self.tone_analyzer.tone( text = text )
 		try:
+			raw_json = self.tone_analyzer.tone( text = text )
 			return raw_json['document_tone']
 		except:
 			print( raw_json )
@@ -27,6 +39,18 @@ class ToneAnalyzer:
 			time.sleep( 60 )
 			# This is fine, nothing wrong here
 			return self.tone_analyze( text )
+
+	def tone_all_num_extract(self, doc_tone):
+		try:
+			to_ret = []
+			for t in doc_tone['tone_categories']:
+				for e in t['tones']:
+					#print( "{} : {}".format( e['tone_name'], e['score'] ) )
+					to_ret.append( e['score'] )
+			return to_ret
+		except:
+			print("Failed to extract tone data")
+			print( sys.exc_info() )
 
 	
 	# Discards writing style and personality data, returning
@@ -48,4 +72,3 @@ class ToneAnalyzer:
 		for e in emotions:
 			nums.append( e['score'] )
 		return nums
-
