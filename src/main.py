@@ -48,7 +48,7 @@ class Main:
 				self.update_files()
 			elif( text == "t" ):
 				self.v.set_classifiers( self.v.get_classifier_ids() )
-				print("TODO")
+				test_classifiers( v, test_fn, data_dir )
 			else:
 				self.view_options()
 
