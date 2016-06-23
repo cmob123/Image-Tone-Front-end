@@ -32,13 +32,14 @@ class Main:
 			elif( text == "z" ):
 				i = ImageRanker( self.train_fn, self.data_dir )
 				i.write_pos_neg_files()
+			elif( text == "d" ):
+				self.v.del_all_classifiers()
 			elif( text == "c" ):
+				# The may want to delete classifiers first
 				self.v.rebuild_classifiers()
 				self.v.set_classifiers( self.v.get_classifier_ids() )
 			elif( text == "l" ):
 				self.v.list_classifiers()
-			elif( text == "q" ):
-				break
 			elif( text == "i" ):
 				url = input(" url? : ")
 				self.v.set_classifiers( self.v.get_classifier_ids() )
@@ -48,7 +49,9 @@ class Main:
 				self.update_files()
 			elif( text == "t" ):
 				self.v.set_classifiers( self.v.get_classifier_ids() )
-				test_classifiers( v, test_fn, data_dir )
+				test_classifiers( self.v, self.test_fn, self.data_dir )
+			elif( text == "q" ):
+				break
 			else:
 				self.view_options()
 
@@ -57,6 +60,7 @@ class Main:
 		print("f : update data directory and file names")
 		print("r : download data from reddit into csv files")
 		print("z : create zip files")
+		print("d : delete existing classifiers")
 		print("c : retrain classifiers")
 		print("t : test classifiers")
 		print("l : list existing classifiers")

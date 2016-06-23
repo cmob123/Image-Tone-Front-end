@@ -92,8 +92,12 @@ class VisualTrainer:
 	As a side effect, pretty prints the classification details
 	"""
 	def classify_single_image( self, url ):
-		to_ret = self.v.classify( images_url = url, classifier_ids = self.classifier_list, threshold = 0.0)
-		#self.pp_classify_response( to_ret )
+		to_ret = None
+		try:
+			to_ret = self.v.classify( images_url = url, classifier_ids = self.classifier_list, threshold = 0.0)
+		except WatsonException as e:
+			print("Watson error occured, unable to process image")
+			print( e )
 		return to_ret
 
 	"""
@@ -152,13 +156,6 @@ class VisualTrainer:
 	# Start from the ground up, nuke all classifiers and rebuild them.
 	# There are very few good reasons to call this. The primary one being that the data has been updated
 	def rebuild_classifiers( self, data_dir = "../data/" ):
-		print("This will delete all existing classifiers and retrain new ones")
-		text = input("Type \'YES\' if you are sure you want to do this: ")
-		if( text != "YES" ):
-			print("Canceling, nothing deleted or created")
-			return
-		print("Here we go")
-		self.del_all_classifiers(prompt = False)
 		# make tone names lowercase
 		# lc_tone_names = map( (lambda x: x.lower()), tone_names )
 		for tone in tone_names:

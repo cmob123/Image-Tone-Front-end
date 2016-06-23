@@ -9,13 +9,14 @@ def test_classifiers( vis_trainer, test_fn, data_dir ):
 	test_imgr = ImageRanker( test_fn, data_dir )
 	actual_emos = test_imgr.emotions
 	num_emos = len( tone_names )
-	assert( len( actual_emotions ) == num_emos )
+	assert( len( actual_emos ) == num_emos )
 	class_emos = [[]] * num_emos
 	for img in test_imgr.images:
 		url = img['url']
 		vis_trainer.set_classifiers( vis_trainer.get_classifier_ids() )
 		j = vis_trainer.classify_single_image( url )
 		print( json.dumps( j, indent=2 ) )
+		vis_trainer.pp_classify_response( j )
 		input()
 
 
