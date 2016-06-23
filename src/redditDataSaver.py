@@ -49,7 +49,6 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 		try:
 			comment_tree = x.comments
 			comment_concat = ""
-			# TODO: use n_comments, or the number of root comments, whichever is smaller
 			num_comments = len( comment_tree ) - 1
 			if( num_comments > n_comments ):
 				num_comments = n_comments

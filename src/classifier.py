@@ -95,9 +95,9 @@ class VisualTrainer:
 		to_ret = None
 		try:
 			to_ret = self.v.classify( images_url = url, classifier_ids = self.classifier_list, threshold = 0.0)
-		except WatsonException as e:
-			print("Watson error occured, unable to process image")
-			print( e )
+		except:
+			print("Error in classifying {}".format( url ) )
+			print( sys.exc_info() )
 		return to_ret
 
 	"""
