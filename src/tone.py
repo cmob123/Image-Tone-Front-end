@@ -15,6 +15,8 @@ tone_names = ["Anger",
 	"Extraversion",
 	"Agreeableness",
 	"Emotional_Range"]
+
+tone_num = len( tone_names )
 # A class to analyze tone, some sort of ... Tone Analyzer
 # Really only handles emotion data
 class ToneAnalyzer:

@@ -19,7 +19,10 @@ i : classify single image
 class Main:
 	def __init__(self):
 		self.v = VisualTrainer()
-		self.update_files()
+		#self.update_files()
+		self.test_fn = "test.csv"
+		self.train_fn = "train.csv"
+		self.data_dir = "../data/"
 
 	def main(self):
 		self.view_options()

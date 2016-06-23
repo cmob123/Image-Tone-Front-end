@@ -15,7 +15,7 @@ import zipfile
 import urllib.request
 import random
 from dataOps import *
-from tone import tone_names
+from tone import tone_names, tone_num
 
 class ImageRanker:
 
@@ -25,7 +25,6 @@ class ImageRanker:
 		csv_fn = self.data_dir + csv_file_name
 		csvfile = open( csv_fn )
 		self.images = []
-		self.num_emos = len( tone_names )
 		csv_reader = csv.DictReader(csvfile)
 		for row in csv_reader:
 			new_img = {}
@@ -43,9 +42,9 @@ class ImageRanker:
 		title_scores = list( map( (lambda x: x['title_data'] ), self.images ) )
 
 		self.emotions = numpy.transpose( scores )
-		assert( self.num_emos == len( self.emotions ) )
+		assert( tone_num == len( self.emotions ) )
 		self.title_emotions = numpy.transpose( title_scores )
-		assert( self.num_emos == len( self.title_emotions ) )
+		assert( tone_num == len( self.title_emotions ) )
 		self.sort_pos_neg()
 		return
 
@@ -55,17 +54,17 @@ class ImageRanker:
 	def sort_pos_neg( self ):
 		top_third_scores = list( map( (lambda x: bisect(2/3, x)), self.emotions ) )
 		bot_third_scores = list( map( (lambda x: bisect(1/3, x)), self.emotions ) )
-		self.pos_imgs = [[]] * self.num_emos
-		self.neg_imgs = [[]] * self.num_emos
+		self.pos_imgs = [[]] * tone_num
+		self.neg_imgs = [[]] * tone_num
 		for img in self.images:
 			# Maybe exec?
 			img_scores = img['comment_data']
 
-			assert( len(img_scores) == self.num_emos )
+			assert( len(img_scores) == tone_num )
 			img['strong_emos'] = []
 			img['weak_emos'] = []
 
-			for i in range(0, self.num_emos ):
+			for i in range(0, tone_num ):
 				# This handles the confidant case: 75% of images have confidance of 0.0, leaving too few images to create a confidance class. We fudge things here to make it work
 				if( top_third_scores[i] == 0.0 and img_scores[i] == 0.0):
 					if( random.choice( [True, False] ) ):
