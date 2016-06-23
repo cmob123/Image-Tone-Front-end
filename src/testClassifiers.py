@@ -1,16 +1,28 @@
 from imageRanker import *
 from classifier import *
+from tone import tone_names
 import sys
 import numpy
 import array
 
-test_file = "test.txt"
+def test_classifiers( vis_trainer, test_fn, data_dir ):
+	test_imgr = ImageRanker( test_fn, data_dir )
+	actual_emos = test_imgr.emotions
+	num_emos = len( tone_names )
+	assert( len( actual_emotions ) == num_emos )
+	class_emos = [[]] * num_emos
+	for img in test_imgr.images:
+		url = img['url']
+		vis_trainer.set_classifiers( vis_trainer.get_classifier_ids() )
+		j = vis_trainer.classify_single_image( url )
+		print( json.dumps( j, indent=2 ) )
+		input()
+
 
 """
 This file is used to test our classifiers.
 It's pretty fragile, but powerful.
 """
-
 def main():
 	#TODO: Check if this is already done
 	classify_images()

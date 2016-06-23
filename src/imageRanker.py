@@ -13,12 +13,14 @@ import os
 import sys
 import zipfile
 import urllib.request
+import random
 from dataOps import *
 from tone import tone_names
 
 class ImageRanker:
 
 	def __init__( self, csv_file_name = "data.csv", data_dir = "../data/" ):
+		random.seed(0)
 		self.data_dir = data_dir
 		csv_fn = self.data_dir + csv_file_name
 		csvfile = open( csv_fn )
@@ -52,6 +54,7 @@ class ImageRanker:
 	# As a side effect, prints the images with the highest score for each emotion
 	def sort_pos_neg( self ):
 		top_third_scores = list( map( (lambda x: bisect(2/3, x)), self.emotions ) )
+		print( top_third_scores )
 		bot_third_scores = list( map( (lambda x: bisect(1/3, x)), self.emotions ) )
 		self.pos_imgs = [[]] * self.num_emos
 		self.neg_imgs = [[]] * self.num_emos
@@ -64,6 +67,11 @@ class ImageRanker:
 			img['weak_emos'] = []
 
 			for i in range(0, self.num_emos ):
+				# This handles the confidant case: 75% of images have confidance of 0.0, leaving too few images to create a confidance class. We fudge things here to make it work
+				if( top_third_scores[i] == 0.0 and img_scores[i] == 0.0):
+					if( random.choice( [True, False] ) ):
+						img['strong_emos'].append( tone_names[i] )
+						continue
 				if( img_scores[i] <= bot_third_scores[i] ):
 					img['weak_emos'].append( tone_names[i] )
 					self.neg_imgs.append( img )
@@ -113,6 +121,7 @@ class ImageRanker:
 			# Got the file, now to add it to some zip files
 			#TODO: Check if file size is 503 bytes. That is the size of "removed.png" in imgur. If so, don't bother using it
 			for emo in img['strong_emos']:
+				if( emo == "Confident" ):
 				pos_files[emo].write( new_path, new_filename )
 			for emo in img['weak_emos']:
 				neg_files[emo].write( new_path, new_filename )

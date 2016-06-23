@@ -1,6 +1,20 @@
 from redditDataSaver import *
 from imageRanker import *
 from classifier import *
+from testClassifiers import *
+
+
+"""
+r : download data from reddit into csv files
+z : create zip files
+c : retrain classifiers
+t : test classifiers
+l : list existing classifiers
+q : quit
+i : classify single image
+? : view options
+
+"""
 
 def main():
 	data_dir = input( "Enter data directory, leave blank for \'../data/\': " )
@@ -27,13 +41,14 @@ def main():
 		print( " - Writing new positive and negative files" )
 
 
+	v = VisualTrainer()
 	if( get_response("Do you want to delete all of your classifiers and train new ones? (y/n) ") ):
-		v = VisualTrainer()
 		v.rebuild_classifiers( data_dir = data_dir )
-
-	# TODO: Test the classifiers
+	
 
 	print( " - All done, your classifiers should be ready to use shortly" )
+	if( get_response( " - Do you want to test them (assuming they are ready? (y/n) " ) ):
+		test_classifiers( v, test_fn, data_dir )
 
 def get_response( question ):
 	text = input(question)
