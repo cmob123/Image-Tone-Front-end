@@ -21,7 +21,6 @@ def main():
 def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn = "train.csv", test_fn = "test.csv" ):
 	print( "Gathering the top {} posts from r/pics".format( n_posts ) )
 	agent = praw.Reddit( user_agent='Comment-picture associator' )
-	submissions = agent.get_subreddit( 'pics' ).get_top_from_all( limit=n_posts )
 # I'm not sure why these flush() calls are needed, but if they aren't there, nothing gets printed until the end
 	sys.stdout.flush()
 
@@ -35,53 +34,63 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 	t = ToneAnalyzer()
 	records_count = 0
 	posts_count = 0
-	# This guarantees that we will always get the same testing and training data
+	last_post = None
+	before = None
 
-	random.seed(0)
-	for x in submissions:
-		print( "Retriving post {}".format( posts_count ) )
-		sys.stdout.flush()
-		posts_count += 1
-		# Make sure each image is a single image, not an album or a .gif
-		if( (len(x.url) < 4) or ((x.url[-4:] != ".jpg") and (x.url[-4:] != ".png"))):
-			continue
+	while True:
+		submissions = agent.get_subreddit( 'pics' ).get_top_from_all( limit=None, params = {'after': before} )
+		# This guarantees that we will always get the same testing and training data
 
-		try:
-			comment_tree = x.comments
-			comment_concat = ""
-			num_comments = len( comment_tree ) - 1
-			if( num_comments > n_comments ):
-				num_comments = n_comments
-			for i in range( 0, num_comments ):
-				if( "body" in vars( comment_tree[i] ) ):
-					comment_concat += str( vars( comment_tree[i])["body"])
-		except:
-			print( "Error getting comments, are we being throttled by reddit?" )
-			print( sys.exc_info() )
-			if( comment_concat == "" ):
+		random.seed(0)
+		for x in submissions:
+			last_post = x
+			print( "Retriving post {}".format( posts_count ) )
+			print( x.name )
+			sys.stdout.flush()
+			posts_count += 1
+			# Make sure each image is a single image, not an album or a .gif
+			if( (len(x.url) < 4) or ((x.url[-4:] != ".jpg") and (x.url[-4:] != ".png"))):
 				continue
 
-		tone = t.tone_analyze( comment_concat )
-		comment_data = t.tone_all_num_extract( tone )
-		title_tone = t.tone_analyze( x.title )
-		title_data = t.tone_all_num_extract( title_tone )
-		post_data = {'arbitrary_id': records_count, 'url': x.url, 'title': x.title, 'title_data': title_data, 'comments': comment_concat, 'comment_data': comment_data}
-			
-		try:
-			csv_writer = random.choice( [train_csv_writer, test_csv_writer] )
+			try:
+				comment_tree = x.comments
+				comment_concat = ""
+				num_comments = len( comment_tree ) - 1
+				if( num_comments > n_comments ):
+					num_comments = n_comments
+				for i in range( 0, num_comments ):
+					if( "body" in vars( comment_tree[i] ) ):
+						comment_concat += str( vars( comment_tree[i])["body"])
+			except:
+				print( "Error getting comments, are we being throttled by reddit?" )
+				print( sys.exc_info() )
+				if( comment_concat == "" ):
+					continue
 
-			csv_writer.writerow( post_data )
-		except UnicodeEncodeError as e:
-			print("Unicode error, cannot save this submission, sorry")
-			continue
-		except:
-			print("Something went wrong processing this post")
-			print(sys.exc_info()[0])
-			continue
+			tone = t.tone_analyze( comment_concat )
+			comment_data = t.tone_all_num_extract( tone )
+			title_tone = t.tone_analyze( x.title )
+			title_data = t.tone_all_num_extract( title_tone )
+			post_data = {'arbitrary_id': records_count, 'url': x.url, 'title': x.title, 'title_data': title_data, 'comments': comment_concat, 'comment_data': comment_data}
+				
+			try:
+				csv_writer = random.choice( [train_csv_writer, test_csv_writer] )
 
-		print("Wrote record {}".format( records_count) )
-		records_count += 1
-		sys.stdout.flush()
+				csv_writer.writerow( post_data )
+			except UnicodeEncodeError as e:
+				print("Unicode error, cannot save this submission, sorry")
+				continue
+			except:
+				print("Something went wrong processing this post")
+				print(sys.exc_info()[0])
+				continue
+
+			print("Wrote record {}".format( records_count) )
+			if( records_count >= n_posts ):
+				break
+			records_count += 1
+			sys.stdout.flush()
+		before = last_post.name
 	train_file.close()
 	test_file.close()
 
