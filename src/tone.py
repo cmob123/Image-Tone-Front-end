@@ -54,7 +54,7 @@ class ToneAnalyzer:
 			return to_ret
 		except:
 			print("Failed to extract tone data")
-			print( sys.exc_info() )
+			print( sys.exc_info()[0] )
 
 	
 	# Discards writing style and personality data, returning

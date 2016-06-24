@@ -12,7 +12,9 @@ from tone import ToneAnalyzer
 # The 10 comments are sent to the Watson tone analyzer, and the scores are saved
 # Each image-tone pair is saved randomly in either a training set or a testing set
 
-fieldnames = ['name', 'arbitrary_id', 'url', 'title', 'title_data', 'comments', 'comment_data']
+fieldnames = [
+	'name', 'arbitrary_id', 'url', 'title', 
+	'title_data', 'comments', 'comment_data']
 
 def main():
 	save_submissions( n_posts = 2048, n_comments = 25, data_dir = "../data/", train_fn = "train.csv", test_fn = "test.csv")
@@ -40,15 +42,11 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 	n_max_step_posts = 500
 	n_steps = int( math.ceil( n_posts / n_max_step_posts ) )
 	ts_step_size = (ts_now - ts_first) / n_steps
-	print("first timestamp is {}".format(ts_first))
-	print("Currently it is {}".format(ts_now))
-
 	ts_step = ts_now
 
 	agent = praw.Reddit( user_agent='Comment-picture associator' )
-	submissions = agent.search( query = "", subreddit = "pics", sort="top", limit=None, syntax="cloudsearch" )
-	# This guarantees that we will always get the same testing and training data
 
+	# This guarantees that we will always get the same testing and training data
 	random.seed(0)
 	while( True ):
 		c_step_posts = 0
@@ -93,7 +91,7 @@ def process_image( sub, ta, csvw_choice, n_comments, id_to_use):
 				comment_concat += str( vars( comment_tree[i])["body"])
 	except:
 		print( "Error getting comments, are we being throttled by reddit?" )
-		print( sys.exc_info() )
+		print( sys.exc_info()[0] )
 		if( comment_concat == "" ):
 			return False
 
@@ -102,10 +100,16 @@ def process_image( sub, ta, csvw_choice, n_comments, id_to_use):
 	title_tone = ta.tone_analyze( sub.title )
 	title_data = ta.tone_all_num_extract( title_tone )
 
-	post_data = {'name': sub.name, 'arbitrary_id': id_to_use, 'url': sub.url, 'title': sub.title, 'title_data': title_data, 'comments': comment_concat, 'comment_data': comment_data}
+	post_data = { 
+		'name': sub.name,
+		'arbitrary_id': id_to_use,
+		'url': sub.url,
+		'title': sub.title,
+		'title_data': title_data,
+		'comments': comment_concat,
+		'comment_data': comment_data}
 		
 	try:
-
 		csvw_choice.writerow( post_data )
 	except UnicodeEncodeError as e:
 		print("Unicode error, cannot save this submission, sorry")

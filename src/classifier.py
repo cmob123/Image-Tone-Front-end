@@ -96,7 +96,7 @@ class VisualTrainer:
 			to_ret = self.v.classify( images_url = url, classifier_ids = self.classifier_list, threshold = 0.0)
 		except:
 			print("Error in classifying {}".format( url ) )
-			print( sys.exc_info() )
+			print( sys.exc_info()[0] )
 		return to_ret
 
 	"""
