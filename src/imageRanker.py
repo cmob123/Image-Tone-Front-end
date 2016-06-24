@@ -21,7 +21,7 @@ from tone import tone_names
 
 class ImageRanker:
 
-	def __init__( self, csv_file_name = "data.csv", data_dir = "../data/" ):
+	def __init__( self, csv_file_name="data.csv", data_dir="../data/" ):
 		random.seed(0)
 		self.data_dir = data_dir
 		csv_fn = self.data_dir + csv_file_name
@@ -102,8 +102,8 @@ class ImageRanker:
 		neg_files = {}
 		# Create and open zip files
 		for tone in tone_names:
-			pos_files[tone] = zipfile.ZipFile( self.data_dir + tone + ".zip", "w", zipfile.ZIP_DEFLATED )
-			neg_files[tone] = zipfile.ZipFile( self.data_dir + "neg-" + tone + ".zip", "w", zipfile.ZIP_DEFLATED )
+			pos_files[tone] = zipfile.ZipFile( self.data_dir+tone+".zip", "w", zipfile.ZIP_DEFLATED )
+			neg_files[tone] = zipfile.ZipFile( self.data_dir+"neg-"+tone+".zip", "w", zipfile.ZIP_DEFLATED )
 
 
 		for img in self.images:
@@ -112,7 +112,7 @@ class ImageRanker:
 
 			sys.stdout.flush()
 			if( not os.path.exists( new_path ) ):
-				print("Downloading {} as {}".format( img['url'], new_path ) )
+				print("Downloading {} as {} ({}/{})".format( img['url'], new_path ) )
 				try:
 					urllib.request.urlretrieve(img['url'], new_path )
 				# catch errors

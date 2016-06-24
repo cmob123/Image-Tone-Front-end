@@ -32,7 +32,7 @@ class Main:
 			if( text == "?" ):
 				self.view_options()
 			elif( text == "r" ):
-				self.reddit_save_helper(self.data_dir, self.train_fn, self.test_fn)
+				self.reddit_save_helper( self.data_dir, self.train_fn, self.test_fn )
 			elif( text == "z" ):
 				i = ImageRanker( self.train_fn, self.data_dir )
 				i.write_pos_neg_files()
@@ -73,7 +73,7 @@ class Main:
 		print("q : quit")
 
 
-	def update_files(self):
+	def update_files( self ):
 		self.data_dir = input( "Enter data directory, leave blank for \'../data/\': " )
 		if( self.data_dir == "" ):
 			self.data_dir = "../data/"
@@ -90,7 +90,7 @@ class Main:
 		print(" - Using {} as data file".format( self.data_dir + self.test_fn ) )
 
 
-	def reddit_save_helper(self, data_dir, train_fn, test_fn):
+	def reddit_save_helper( self, data_dir, train_fn, test_fn ):
 		n_posts = ""
 		while( True ):
 			str_n_posts = input( "How many records do you want to retrieve? ")
@@ -101,7 +101,7 @@ class Main:
 				continue
 		n_comments = 25
 		print( " - This could take some time, go get lunch or something" )
-		save_submissions( n_posts = n_posts, n_comments = n_comments, data_dir = data_dir, train_fn = train_fn, test_fn = test_fn)
+		save_submissions( n_posts=n_posts, n_comments=n_comments, data_dir=data_dir, train_fn=train_fn, test_fn=test_fn )
 		print( " - Finished saving reddit data" )
 
 

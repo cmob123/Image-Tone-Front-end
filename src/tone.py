@@ -21,7 +21,7 @@ tone_names = [
 # A class to analyze tone, some sort of ... Tone Analyzer
 # Really only handles emotion data
 class ToneAnalyzer:
-	def __init__(self):
+	def __init__( self ):
 		self.tone_analyzer = ToneAnalyzerV3(
 				password = "tbcGKRwREvC8",
     			username = "0d44496f-11a7-4552-9145-d03acd1bf293",
@@ -34,7 +34,7 @@ class ToneAnalyzer:
 	# In that case, we just want to wait 60 seconds and try again
 	def tone_analyze( self, text ):
 		try:
-			raw_json = self.tone_analyzer.tone( text = text )
+			raw_json = self.tone_analyzer.tone( text=text )
 			return raw_json['document_tone']
 		except:
 			print( raw_json )
@@ -43,12 +43,12 @@ class ToneAnalyzer:
 			# This is fine, nothing wrong here
 			return self.tone_analyze( text )
 
-	def tone_all_num_extract(self, doc_tone):
+	def tone_all_num_extract( self, doc_tone ):
 		try:
 			to_ret = {}
 			for t in doc_tone['tone_categories']:
 				for e in t['tones']:
-					#print( "{} : {}".format( e['tone_name'], e['score'] ) )
+					# Can't have spaces in tone names, only relevant for Emotional Range
 					tone_name = e['tone_name'].replace( ' ', '_' )
 					to_ret[ tone_name ] = e['score']
 			return to_ret

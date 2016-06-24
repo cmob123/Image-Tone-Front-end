@@ -25,17 +25,17 @@ def normalizeData( single_scores ):
 	verbose = False
 	#normal = list( map ( (lambda x: x + (x * (1-x))/(mu * (1-mu)) * (0.5-mu)), standard) )
 	if( verbose ):
-		print("Pre-normalized:")
+		print( "Pre-normalized:" )
 		print( single_scores )
 		print( "mean: " + str(numpy.mean(single_scores)) )
 		print( "max: " + str(numpy.max(single_scores)) )
 		print( "min: " + str(numpy.min(single_scores)) )
-		print("Standarized")
+		print( "Standarized" )
 		print( standard )
 		print( "mean: " + str(numpy.mean(standard)) )
 		print( "max: " + str(numpy.max(standard)) )
 		print( "min: " + str(numpy.min(standard)) )
-		#print("Normalized")
+		#print( "Normalized" )
 		#print( normal )
 		#print( "mean: " + str(numpy.mean(normal)) )
 		#print( "max: " + str(numpy.max(normal)) )
@@ -45,7 +45,7 @@ def normalizeData( single_scores ):
 # Calculates the euclidian distance between 2 scores. Should be used for testing
 # How good our classifier is
 def dataDistance( score1, score2 ):
-	s = sum( map( (lambda x, y: (x - y)**2 ), score1, score2))
+	s = sum( map( (lambda x, y: (x - y)**2), score1, score2))
 	return  s**(0.5)
 
 """

@@ -17,7 +17,7 @@ fieldnames = [
 	'title_data', 'comments', 'comment_data']
 
 def main():
-	save_submissions( n_posts = 2048, n_comments = 25, data_dir = "../data/", train_fn = "train.csv", test_fn = "test.csv")
+	save_submissions( n_posts=2048, n_comments=25, data_dir="../data/", train_fn="train.csv", test_fn="test.csv")
 
 
 """
@@ -31,11 +31,11 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 	sys.stdout.flush()
 
 	# change to a if we want to append instead of overwrite
-	f_train = open(data_dir + train_fn, "w", newline='' )
-	csvw_train = csv.DictWriter( f_train, fieldnames=fieldnames)
+	f_train = open( data_dir+train_fn, "w", newline='' )
+	csvw_train = csv.DictWriter( f_train, fieldnames=fieldnames )
 	csvw_train.writeheader()
-	f_test = open(data_dir + test_fn, "w", newline='' )
-	csvw_test = csv.DictWriter( f_test, fieldnames=fieldnames)
+	f_test = open( data_dir+test_fn, "w", newline='' )
+	csvw_test = csv.DictWriter( f_test, fieldnames=fieldnames )
 	csvw_test.writeheader()
 	t = ToneAnalyzer()
 	c_records = 0
@@ -55,11 +55,11 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 	random.seed(0)
 	while( True ):
 		c_step_posts = 0
-		str_timestamp_range = "{}..{}".format( int(ts_step - ts_step_size ), int(ts_step) )
+		str_timestamp_range = "{}..{}".format( int( ts_step - ts_step_size ), int(ts_step) )
 		print("Current timestamp range is " + str_timestamp_range)
 		print("c_posts = {}".format( c_posts ) )
 		str_search = "timestamp:" + str_timestamp_range
-		submissions = agent.search( str_search, subreddit = "pics", sort="top", limit=None, syntax="cloudsearch" )
+		submissions = agent.search( str_search, subreddit="pics", sort="top", limit=None, syntax="cloudsearch" )
 		ts_step -= ts_step_size
 		for sub in submissions:
 			print( "Retriving post {}".format( c_posts ) )
@@ -68,7 +68,7 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 			c_posts += 1
 
 			#Process the image, returns true if it processed successfully
-			if( process_post( sub, t, random.choice( [csvw_train, csvw_test]), n_comments, c_records ) ):
+			if( process_post( sub, t, random.choice( [csvw_train, csvw_test] ), n_comments, c_records ) ):
 				c_records += 1
 				print( "Wrote record {}".format( c_records ) )
 				sys.stdout.flush()
@@ -98,7 +98,7 @@ def process_post( sub, ta, csvw_choice, n_comments, id_to_use):
 			c_post_comments = n_comments
 		for i in range( 0, c_post_comments ):
 			if( "body" in vars( comment_tree[i] ) ):
-				comment_concat += str( vars( comment_tree[i])["body"])
+				comment_concat += str( vars( comment_tree[i] )["body"] )
 	except:
 		print( "Error getting comments, are we being throttled by reddit?" )
 		print( sys.exc_info()[0] )
