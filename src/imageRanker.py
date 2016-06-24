@@ -17,7 +17,7 @@ import urllib.request
 import functools
 import random
 from dataOps import *
-from tone import tone_names, tone_num
+from tone import tone_names
 
 class ImageRanker:
 
@@ -47,8 +47,8 @@ class ImageRanker:
 			self.images.append( new_img )
 		csvfile.close()
 
-		assert( tone_num == len( self.emotions ) )
-		assert( tone_num == len( self.title_emotions ) )
+		assert( set(tone_names) == set(self.emotions.keys) )
+		assert( set(tone_names) == set(title_emotions.keys) )
 		self.sort_pos_neg()
 		return
 
@@ -64,7 +64,7 @@ class ImageRanker:
 			# Maybe exec?
 			img_scores = img['comment_data']
 
-			assert( len(img_scores) == tone_num )
+			assert( set(tone_names) == set(img_scores.keys) )
 			img['strong_emos'] = []
 			img['weak_emos'] = []
 

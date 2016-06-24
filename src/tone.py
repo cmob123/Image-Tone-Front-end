@@ -3,7 +3,8 @@ import time
 import sys
 from watson_developer_cloud import ToneAnalyzerV3
 
-tone_names = ["Anger", 
+tone_names = [
+	"Anger", 
 	"Disgust",
 	"Fear",
 	"Joy",
@@ -15,9 +16,8 @@ tone_names = ["Anger",
 	"Conscientiousness",
 	"Extraversion",
 	"Agreeableness",
-	"Emotional_Range"]
+	"Emotional_Range" ]
 
-tone_num = len( tone_names )
 # A class to analyze tone, some sort of ... Tone Analyzer
 # Really only handles emotion data
 class ToneAnalyzer:

@@ -1,6 +1,6 @@
 from imageRanker import *
 from classifier import *
-from tone import tone_names,tone_num
+from tone import tone_names
 from dataOps import *
 import sys
 import numpy
@@ -36,8 +36,8 @@ def test_classifiers( vis_trainer, test_fn, data_dir ):
 		image_data_set.append( img )
 	actual_emos = dict.fromkeys( tone_names, list )
 	class_emos = dict.fromkeys( tone_names, list )
-	assert( len( actual_emos ) == tone_num )
-	assert( len( class_emos ) == tone_num )
+	assert( set( actual_emos.keys ) == set( tone_names ) )
+	assert( set( class_emos.keys ) == set( tone_names ) )
 	for img in image_data_set:
 		if( 'classifier_data' in img and 'comment_data' in img ):
 			assert( set( tone_names ) == set( img['classifier_data'].keys) )
