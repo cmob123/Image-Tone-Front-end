@@ -169,7 +169,7 @@ class VisualTrainer:
 				[class_name],
 				[filename],
 				neg_filename,
-				True )
+				False )
 		print( "Finished rebuilding classifiers, the new list is: " )
 		self.v.list_classifiers()
 

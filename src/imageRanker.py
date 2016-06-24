@@ -28,8 +28,8 @@ class ImageRanker:
 		csvfile = open( csv_fn )
 		self.images = []
 		csv_reader = csv.DictReader(csvfile)
-		self.emotions = dict.fromkeys( tone_names, [] )
-		self.title_emotions = dict.fromkeys( tone_names, [] )
+		self.emotions = {tone : [] for tone in tone_names }
+		self.title_emotions = {tone : [] for tone in tone_names }
 		for row in csv_reader:
 			new_img = {}
 			new_img["name"] = row["name"]
@@ -58,8 +58,14 @@ class ImageRanker:
 		based on whether they are in the top or bottom 1/3
 	"""
 	def sort_pos_neg( self ):
-		top_third_scores = {k: bisect( 2/3, v ) for k, v in self.emotions.items()}
-		bot_third_scores = {k: bisect( 1/3, v ) for k, v in self.emotions.items()}
+		#TODO, why are these all the same
+		top_third_scores = dict.fromkeys( self.emotions.keys() )
+		bot_third_scores = dict.fromkeys( self.emotions.keys() )
+		for k,v in self.emotions.items():
+			top_third_scores[k] = bisect( 2/3, v )
+			bot_third_scores[k] = bisect( 1/3, v )
+		print( top_third_scores )
+		print( bot_third_scores )
 		self.pos_imgs = dict.fromkeys(tone_names, [])
 		self.neg_imgs = dict.fromkeys(tone_names, [])
 		for img in self.images:
@@ -134,7 +140,7 @@ class ImageRanker:
 			for emo in img["weak_tones"]:
 				neg_files[emo].write( new_path, new_filename )
 
-		for (k,v) in pos_files:
+		for k,v in pos_files.items():
 			v.close()
-		for (k,v) in neg_files:
+		for k,v in neg_files.items():
 			v.close()
