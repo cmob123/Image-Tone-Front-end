@@ -9,8 +9,7 @@ from tone import tone_names
 
 
 
-apikey = 'cb413d69a797e117154d8474ea7397a04866551a'
-anger_class_id ="Angerornotv2_2085176946"
+apikey = 'dfb48eeb05a0258553c5aa5371426e50cee88bc9'
 
 # A class to analyze tone, some sort of ... Tone Analyzer
 # Really only handles emotion data
