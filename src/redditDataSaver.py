@@ -36,7 +36,7 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 	# Current timestamp
 	ts_now = int(time.time())
 	# timestamp from 2011-1-1 @ 00:00:00
-	ts_first = 1293840000
+	ts_first = 1388534400
 	n_max_step_posts = 500
 	n_steps = int( math.ceil( n_posts / n_max_step_posts ) )
 	ts_step_size = (ts_now - ts_first) / n_steps
