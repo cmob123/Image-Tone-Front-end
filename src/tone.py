@@ -1,5 +1,6 @@
 import json
 import time
+import sys
 from watson_developer_cloud import ToneAnalyzerV3
 
 tone_names = ["Anger", 
@@ -44,11 +45,12 @@ class ToneAnalyzer:
 
 	def tone_all_num_extract(self, doc_tone):
 		try:
-			to_ret = []
+			to_ret = {}
 			for t in doc_tone['tone_categories']:
 				for e in t['tones']:
 					#print( "{} : {}".format( e['tone_name'], e['score'] ) )
-					to_ret.append( e['score'] )
+					tone_name = e['tone_name'].replace( ' ', '_' )
+					to_ret[ tone_name ] = e['score']
 			return to_ret
 		except:
 			print("Failed to extract tone data")
@@ -74,3 +76,7 @@ class ToneAnalyzer:
 		for e in emotions:
 			nums.append( e['score'] )
 		return nums
+
+t = ToneAnalyzer()
+j = t.tone_analyze( "Do not ask for whom the bell tolls, it tolls for thee" )
+t.tone_all_num_extract( j )

@@ -12,14 +12,14 @@ from tone import ToneAnalyzer
 # The 10 comments are sent to the Watson tone analyzer, and the scores are saved
 # Each image-tone pair is saved randomly in either a training set or a testing set
 
-fieldnames = ['arbitrary_id', 'url', 'title', 'title_data', 'comments', 'comment_data']
+fieldnames = ['name', 'arbitrary_id', 'url', 'title', 'title_data', 'comments', 'comment_data']
 
 def main():
 	save_submissions( n_posts = 10000, n_comments = 25, data_dir = "../data/", data_fn = "data.csv")
 
 
 def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn = "train.csv", test_fn = "test.csv" ):
-	print( "Gathering the top {} posts from r/pics".format( n_posts ) )
+	print( "Retrieving {} data points from r/pics".format( n_posts ) )
 	agent = praw.Reddit( user_agent='Comment-picture associator' )
 # I'm not sure why these flush() calls are needed, but if they aren't there, nothing gets printed until the end
 	sys.stdout.flush()
@@ -35,10 +35,10 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 	records_count = 0
 	posts_count = 0
 	last_post = None
-	before = None
+	after = None
 
 	while True:
-		submissions = agent.get_subreddit( 'pics' ).get_top_from_all( limit=None, params = {'after': before} )
+		submissions = agent.get_subreddit( 'pics' ).get_top_from_all( limit=None, params = {'after': after} )
 		# This guarantees that we will always get the same testing and training data
 
 		random.seed(0)
@@ -71,7 +71,7 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 			comment_data = t.tone_all_num_extract( tone )
 			title_tone = t.tone_analyze( x.title )
 			title_data = t.tone_all_num_extract( title_tone )
-			post_data = {'arbitrary_id': records_count, 'url': x.url, 'title': x.title, 'title_data': title_data, 'comments': comment_concat, 'comment_data': comment_data}
+			post_data = {'name': x.name, 'arbitrary_id': records_count, 'url': x.url, 'title': x.title, 'title_data': title_data, 'comments': comment_concat, 'comment_data': comment_data}
 				
 			try:
 				csv_writer = random.choice( [train_csv_writer, test_csv_writer] )
@@ -87,12 +87,12 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 
 			print("Wrote record {}".format( records_count) )
 			if( records_count >= n_posts ):
-				break
+				train_file.close()
+				test_file.close()
+				return
 			records_count += 1
 			sys.stdout.flush()
-		before = last_post.name
-	train_file.close()
-	test_file.close()
+		after = last_post.name
 
 if __name__ == "__main__":
     main()

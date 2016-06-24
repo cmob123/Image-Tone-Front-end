@@ -93,8 +93,15 @@ class Main:
 
 
 	def reddit_save_helper(self, data_dir, train_fn, test_fn):
+		n_posts = ""
+		while( True ):
+			str_n_posts = input( "How many records do you want to retrieve? ")
+			try:
+				n_posts = int( str_n_posts )
+				break
+			except ValueError:
+				continue
 		# TODO: number of files, number of comments
-		n_posts = 1000
 		n_comments = 25
 		print( " - This could take some time, go get lunch or something" )
 		save_submissions( n_posts = n_posts, n_comments = n_comments, data_dir = data_dir, train_fn = train_fn, test_fn = test_fn)
