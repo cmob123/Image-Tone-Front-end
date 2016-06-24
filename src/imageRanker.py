@@ -32,18 +32,18 @@ class ImageRanker:
 		self.title_emotions = dict.fromkeys( tone_names, [] )
 		for row in csv_reader:
 			new_img = {}
-			new_img['name'] = row['name']
-			new_img['id'] = int( row['arbitrary_id'] )
-			new_img['url'] = row['url']
-			#new_img['title'] = row['title']
-			#new_img['comments'] = row['comments']
-			new_img['title_data'] = ast.literal_eval( row['title_data'] )
-			new_img['comment_data'] = ast.literal_eval( row['comment_data' ] )
+			new_img["name"] = row["name"]
+			new_img["id"] = int( row["arbitrary_id"] )
+			new_img["url"] = row["url"]
+			#new_img["title"] = row["title"]
+			#new_img["comments"] = row["comments"]
+			new_img["title_data"] = ast.literal_eval( row["title_data"] )
+			new_img["comment_data"] = ast.literal_eval( row["comment_data" ] )
 			for tone in tone_names:
-				self.emotions[tone].append(new_img['comment_data'][tone])
-				self.title_emotions[tone].append( new_img['title_data'][tone] )
-			new_img['strong_tones'] = []
-			new_img['weak_tones'] = []
+				self.emotions[tone].append(new_img["comment_data"][tone])
+				self.title_emotions[tone].append( new_img["title_data"][tone] )
+			new_img["strong_tones"] = []
+			new_img["weak_tones"] = []
 			self.images.append( new_img )
 		csvfile.close()
 
@@ -54,7 +54,7 @@ class ImageRanker:
 
 	"""
 	Sorts the images in the top and bottom 1/3 of each emotion
-	Also fills the image keys 'strong_tones' and 'weak_tones'
+	Also fills the image keys "strong_tones" and "weak_tones"
 		based on whether they are in the top or bottom 1/3
 	"""
 	def sort_pos_neg( self ):
@@ -64,29 +64,29 @@ class ImageRanker:
 		self.neg_imgs = dict.fromkeys(tone_names, [])
 		for img in self.images:
 			# Maybe exec?
-			img_scores = img['comment_data']
+			img_scores = img["comment_data"]
 
 			assert( set( tone_names ) == set( img_scores.keys() ) )
-			img['strong_tones'] = []
-			img['weak_tones'] = []
+			img["strong_tones"] = []
+			img["weak_tones"] = []
 
 			for tone in tone_names:
 				# This handles the confidant case: 75% of images have confidance of 0.0, leaving too few images to create a confidance class. We fudge things here to make it work
 				if( top_third_scores[tone] == 0.0 and img_scores[tone] == 0.0):
 					if( random.choice( [True, False] ) ):
-						img['strong_tones'].append( tone )
+						img["strong_tones"].append( tone )
 						continue
 				if( img_scores[tone] <= bot_third_scores[tone] ):
-					img['weak_tones'].append( tone )
+					img["weak_tones"].append( tone )
 					self.neg_imgs[tone].append( img )
 				elif( img_scores[tone] > top_third_scores[tone] ):
-					img['strong_tones'].append( tone )
+					img["strong_tones"].append( tone )
 					self.pos_imgs[tone].append( img )
 		return
 	
 	"""
 	Downloads all image files that were loaded by __init__ into a tmp directory
-	Based on their '[strong|weak]_tones' tags, it creates zip files
+	Based on their "[strong|weak]_tones" tags, it creates zip files
 	Containing positive and negative examples of the tone
 	"""
 	def write_pos_neg_files( self ):
@@ -107,31 +107,31 @@ class ImageRanker:
 
 
 		for img in self.images:
-			new_filename = str( img['name'] ) + ".jpg"
+			new_filename = str( img["name"] ) + ".jpg"
 			new_path = tmp_dir_name + new_filename
 
 			sys.stdout.flush()
 			if( not os.path.exists( new_path ) ):
-				print("Downloading {} as {} ({}/{})".format( img['url'], new_path ) )
+				print( "Downloading {} as {}".format( img["url"], new_path )  )
 				try:
-					urllib.request.urlretrieve(img['url'], new_path )
+					urllib.request.urlretrieve( img["url"], new_path  )
 				# catch errors
 				except urllib.error.HTTPError as e:
-					print ("Error (HTTP): couldn't retrieve image at {}".format( img['url'] ))
+					print( "Error (HTTP): couldn't retrieve image at {}".format( img["url"] ) )
 					print( str( e ) )
 					continue
 				except urllib.error.URLError as e:
-					print ("Error (URL): couldn't retrieve image at {}".format( img['url'] ))
+					print( "Error (URL): couldn't retrieve image at {}".format( img["url"] ) )
 					print( str(e) )
 					continue
 
 			# Got the file, now to add it to some zip files
 			#TODO: Check if file size is 503 bytes. That is the size of "removed.png" in imgur. If so, don't bother using it
 			# The reason we use new_path and new_filename is due to the way
-			# '/'s vs '\'s are resolved by the zipfile module
-			for emo in img['strong_tones']:
+			# "/"s vs "\"s are resolved by the zipfile module
+			for emo in img["strong_tones"]:
 				pos_files[emo].write( new_path, new_filename )
-			for emo in img['weak_tones']:
+			for emo in img["weak_tones"]:
 				neg_files[emo].write( new_path, new_filename )
 
 		for (k,v) in pos_files:

@@ -35,7 +35,7 @@ class ToneAnalyzer:
 	def tone_analyze( self, text ):
 		try:
 			raw_json = self.tone_analyzer.tone( text=text )
-			return raw_json['document_tone']
+			return raw_json["document_tone"]
 		except:
 			print( raw_json )
 			print( "Looks like we're being rate limited. Waiting and trying again" )
@@ -46,11 +46,11 @@ class ToneAnalyzer:
 	def tone_all_num_extract( self, doc_tone ):
 		try:
 			to_ret = {}
-			for t in doc_tone['tone_categories']:
-				for e in t['tones']:
+			for t in doc_tone["tone_categories"]:
+				for e in t["tones"]:
 					# Can't have spaces in tone names, only relevant for Emotional Range
-					tone_name = e['tone_name'].replace( ' ', '_' )
-					to_ret[ tone_name ] = e['score']
+					tone_name = e["tone_name"].replace( " ", "_" )
+					to_ret[ tone_name ] = e["score"]
 			return to_ret
 		except:
 			print("Failed to extract tone data")
@@ -60,21 +60,21 @@ class ToneAnalyzer:
 	# Discards writing style and personality data, returning
 	# only emotion data
 	def extract_emotions( self, doc_tone ):
-		emotions = doc_tone['tone_categories'][0]['tones']
+		emotions = doc_tone["tone_categories"][0]["tones"]
 		return emotions
 
 	# pretty prints the emotion score, expects json input in the same format returned
 	# by extract_emotions
 	def emotions_pp( self, emotions ):
 		for e in emotions:
-			print( e['tone_name'] + " : " + str( e['score'] ) )
+			print( e["tone_name"] + " : " + str( e["score"] ) )
 
 	# extracts the 5 numbered emotion scores from the json
 	# expects json input returned by extract_emotions
 	def emotions_num_extract( self, emotions ):
 		nums = []
 		for e in emotions:
-			nums.append( e['score'] )
+			nums.append( e["score"] )
 		return nums
 
 t = ToneAnalyzer()

@@ -13,8 +13,8 @@ from tone import ToneAnalyzer
 # Each image-tone pair is saved randomly in either a training set or a testing set
 
 fieldnames = [
-	'name', 'arbitrary_id', 'url', 'title', 
-	'title_data', 'comments', 'comment_data']
+	"name", "arbitrary_id", "url", "title", 
+	"title_data", "comments", "comment_data"]
 
 def main():
 	save_submissions( n_posts=2048, n_comments=25, data_dir="../data/", train_fn="train.csv", test_fn="test.csv")
@@ -31,10 +31,10 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 	sys.stdout.flush()
 
 	# change to a if we want to append instead of overwrite
-	f_train = open( data_dir+train_fn, "w", newline='' )
+	f_train = open( data_dir+train_fn, "w", newline="" )
 	csvw_train = csv.DictWriter( f_train, fieldnames=fieldnames )
 	csvw_train.writeheader()
-	f_test = open( data_dir+test_fn, "w", newline='' )
+	f_test = open( data_dir+test_fn, "w", newline="" )
 	csvw_test = csv.DictWriter( f_test, fieldnames=fieldnames )
 	csvw_test.writeheader()
 	t = ToneAnalyzer()
@@ -49,7 +49,7 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 	ts_step_size = (ts_now - ts_first) / n_steps
 	ts_step = ts_now
 
-	agent = praw.Reddit( user_agent='Comment-picture associator' )
+	agent = praw.Reddit( user_agent="Comment-picture associator" )
 
 	# This guarantees that we will always get the same testing and training data
 	random.seed(0)
@@ -111,13 +111,13 @@ def process_post( sub, ta, csvw_choice, n_comments, id_to_use):
 	title_data = ta.tone_all_num_extract( title_tone )
 
 	post_data = { 
-		'name': sub.name,
-		'arbitrary_id': id_to_use,
-		'url': sub.url,
-		'title': sub.title,
-		'title_data': title_data,
-		'comments': comment_concat,
-		'comment_data': comment_data}
+		"name": sub.name,
+		"arbitrary_id": id_to_use,
+		"url": sub.url,
+		"title": sub.title,
+		"title_data": title_data,
+		"comments": comment_concat,
+		"comment_data": comment_data}
 		
 	try:
 		csvw_choice.writerow( post_data )

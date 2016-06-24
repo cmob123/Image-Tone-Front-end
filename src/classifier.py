@@ -9,7 +9,7 @@ from tone import tone_names
 
 
 
-apikey = 'dfb48eeb05a0258553c5aa5371426e50cee88bc9'
+apikey = "dfb48eeb05a0258553c5aa5371426e50cee88bc9"
 
 # A class to analyze tone, some sort of ... Tone Analyzer
 # Really only handles emotion data
@@ -18,7 +18,7 @@ class VisualTrainer:
 	v = None
 	
 	def __init__(self):
-		self.v = VisualRecognitionV3('2016-05-20', api_key=apikey)
+		self.v = VisualRecognitionV3( "2016-05-20", api_key=apikey )
 		self.classifier_list = None
 	
 	"""
@@ -46,6 +46,7 @@ class VisualTrainer:
 		n_classes = len( class_names )
 		arguments_str = ""
 		open_files = []
+
 		# This is a little weird, basically, we don't know the names or how many classes we want
 		# we need to generate the parameter names on the fly and build the exec string
 		# while maintaining a list of open files, so that we can close them later
@@ -105,8 +106,7 @@ class VisualTrainer:
 	fear: 0.0245
 	...
 
-	This is pretty fragile, it more or less expects the format returned by classify_single_image, and if there are any errors it will break
-	Someone should fix this later
+	This expects the format returned by classify_single_image
 	"""
 	def pp_classify_response( self, some_json):
 		try:
@@ -118,16 +118,18 @@ class VisualTrainer:
 					for cl in c["classes"]:
 						print("{} : {}".format( cl["class"], cl["score"] ) )
 		except KeyError as e:
-			print("KeyError when printing the classify response")
-			print("Maybe something went wrong in classification?")
+			print( "KeyError when printing the classify response" )
+			print( "Maybe something went wrong in classification?" )
 			print( e )
 
 
-	# Delete all classifiers. They are unrecoverable
-	# If prompt is given as false, this will not confirm your choice, it will just delete everything
+	"""
+	Delete all classifiers. They are unrecoverable
+	If prompt is given as false, this will not confirm your choice, it will just delete everything
+	"""
 	def del_all_classifiers( self, prompt = True ):
 		if( prompt ):
-			text = input( "This will delete ALL classifiers. Type \"YES\" if you really want to do this: ")
+			text = input( "This will delete ALL classifiers. Type 'YES' if you really want to do this: ")
 			if( text != "YES" ):
 				print( "exiting, nothing deleted created" )
 				return None

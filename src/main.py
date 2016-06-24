@@ -61,30 +61,30 @@ class Main:
 
 
 	def view_options(self):
-		print("f : update data directory and file names")
-		print("r : download data from reddit into csv files")
-		print("z : create zip files")
-		print("d : delete existing classifiers")
-		print("c : retrain classifiers")
-		print("t : test classifiers")
-		print("l : list existing classifiers")
-		print("i : classify single image")
-		print("? : view options")
-		print("q : quit")
+		print( "f : update data directory and file names" )
+		print( "r : download data from reddit into csv files" )
+		print( "z : create zip files" )
+		print( "d : delete existing classifiers" )
+		print( "c : retrain classifiers" )
+		print( "t : test classifiers" )
+		print( "l : list existing classifiers" )
+		print( "i : classify single image" )
+		print( "? : view options" )
+		print( "q : quit" )
 
 
 	def update_files( self ):
-		self.data_dir = input( "Enter data directory, leave blank for \'../data/\': " )
+		self.data_dir = input( "Enter data directory, leave blank for '../data/': " )
 		if( self.data_dir == "" ):
 			self.data_dir = "../data/"
 		print(" - Using {} as data directory".format( self.data_dir ) )
 
-		self.train_fn = input( "Enter the name of the training csv file, leave blank for \'train.csv\': " )
+		self.train_fn = input( "Enter the name of the training csv file, leave blank for 'train.csv': " )
 		if( self.train_fn == "" ):
 			self.train_fn = "train.csv"
 		print(" - Using {} as data file".format( self.data_dir + self.train_fn ) )
 
-		self.test_fn = input( "Enter the name of the testing csv file, leave blank for \'test.csv\': " )
+		self.test_fn = input( "Enter the name of the testing csv file, leave blank for 'test.csv\: " )
 		if( self.test_fn == "" ):
 			self.test_fn = "test.csv"
 		print(" - Using {} as data file".format( self.data_dir + self.test_fn ) )
