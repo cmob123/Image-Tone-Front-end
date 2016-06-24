@@ -1,4 +1,4 @@
-# This moduel include information and sample codes for 
+# This module includes information and sample codes for 
 # accessing VR service on Bluemix.
 
 
