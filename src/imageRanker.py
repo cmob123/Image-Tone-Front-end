@@ -42,19 +42,21 @@ class ImageRanker:
 			for tone in tone_names:
 				self.emotions[tone].append(new_img['comment_data'][tone])
 				self.title_emotions[tone].append( new_img['title_data'][tone] )
-			new_img['strong_emos'] = []
-			new_img['weak_emos'] = []
+			new_img['strong_tones'] = []
+			new_img['weak_tones'] = []
 			self.images.append( new_img )
 		csvfile.close()
 
-		assert( set(tone_names) == set(self.emotions.keys) )
-		assert( set(tone_names) == set(title_emotions.keys) )
+		assert( set(tone_names) == set(self.emotions.keys()) )
+		assert( set(tone_names) == set(self.title_emotions.keys()) )
 		self.sort_pos_neg()
 		return
 
-	# Saves the images in the top and bottom 1/3
-	# Any image not in *any* top 1/3 gets saved in a Negative_all file
-	# As a side effect, prints the images with the highest score for each emotion
+	"""
+	Sorts the images in the top and bottom 1/3 of each emotion
+	Also fills the image keys 'strong_tones' and 'weak_tones'
+		based on whether they are in the top or bottom 1/3
+	"""
 	def sort_pos_neg( self ):
 		top_third_scores = {k: bisect( 2/3, v ) for k, v in self.emotions.items()}
 		bot_third_scores = {k: bisect( 1/3, v ) for k, v in self.emotions.items()}
@@ -64,26 +66,28 @@ class ImageRanker:
 			# Maybe exec?
 			img_scores = img['comment_data']
 
-			assert( set(tone_names) == set(img_scores.keys) )
-			img['strong_emos'] = []
-			img['weak_emos'] = []
+			assert( set( tone_names ) == set( img_scores.keys() ) )
+			img['strong_tones'] = []
+			img['weak_tones'] = []
 
 			for tone in tone_names:
 				# This handles the confidant case: 75% of images have confidance of 0.0, leaving too few images to create a confidance class. We fudge things here to make it work
 				if( top_third_scores[tone] == 0.0 and img_scores[tone] == 0.0):
 					if( random.choice( [True, False] ) ):
-						img['strong_emos'].append( tone )
+						img['strong_tones'].append( tone )
 						continue
 				if( img_scores[tone] <= bot_third_scores[tone] ):
-					img['weak_emos'].append( tone )
+					img['weak_tones'].append( tone )
 					self.neg_imgs[tone].append( img )
 				elif( img_scores[tone] > top_third_scores[tone] ):
-					img['strong_emos'].append( tone )
+					img['strong_tones'].append( tone )
 					self.pos_imgs[tone].append( img )
 		return
 	
 	"""
-	Writes the positive and negative file data to files in the data directory
+	Downloads all image files that were loaded by __init__ into a tmp directory
+	Based on their '[strong|weak]_tones' tags, it creates zip files
+	Containing positive and negative examples of the tone
 	"""
 	def write_pos_neg_files( self ):
 		tmp_dir_name = self.data_dir + "tmp/"
@@ -94,9 +98,9 @@ class ImageRanker:
 			print("Could not make temporary directory, no files created:")
 			print( e.exc_info() )
 			return
-		# Create and open zip files
 		pos_files = {}
 		neg_files = {}
+		# Create and open zip files
 		for tone in tone_names:
 			pos_files[tone] = zipfile.ZipFile( self.data_dir + tone + ".zip", "w", zipfile.ZIP_DEFLATED )
 			neg_files[tone] = zipfile.ZipFile( self.data_dir + "neg-" + tone + ".zip", "w", zipfile.ZIP_DEFLATED )
@@ -120,14 +124,17 @@ class ImageRanker:
 					print ("Error (URL): couldn't retrieve image at {}".format( img['url'] ))
 					print( str(e) )
 					continue
+
 			# Got the file, now to add it to some zip files
 			#TODO: Check if file size is 503 bytes. That is the size of "removed.png" in imgur. If so, don't bother using it
-			for emo in img['strong_emos']:
+			# The reason we use new_path and new_filename is due to the way
+			# '/'s vs '\'s are resolved by the zipfile module
+			for emo in img['strong_tones']:
 				pos_files[emo].write( new_path, new_filename )
-			for emo in img['weak_emos']:
+			for emo in img['weak_tones']:
 				neg_files[emo].write( new_path, new_filename )
 
-		for f in pos_files:
-			pos_files[f].close()
-		for f in neg_files:
-			neg_files[f].close()
+		for (k,v) in pos_files:
+			v.close()
+		for (k,v) in neg_files:
+			v.close()

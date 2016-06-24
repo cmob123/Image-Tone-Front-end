@@ -36,12 +36,12 @@ def test_classifiers( vis_trainer, test_fn, data_dir ):
 		image_data_set.append( img )
 	actual_emos = dict.fromkeys( tone_names, list )
 	class_emos = dict.fromkeys( tone_names, list )
-	assert( set( actual_emos.keys ) == set( tone_names ) )
-	assert( set( class_emos.keys ) == set( tone_names ) )
+	assert( set( actual_emos.keys() ) == set( tone_names ) )
+	assert( set( class_emos.keys() ) == set( tone_names ) )
 	for img in image_data_set:
 		if( 'classifier_data' in img and 'comment_data' in img ):
-			assert( set( tone_names ) == set( img['classifier_data'].keys) )
-			assert( set( tone_names ) == set( img['comment_data'].keys) )
+			assert( set( tone_names ) == set( img['classifier_data'].keys()) )
+			assert( set( tone_names ) == set( img['comment_data'].keys()) )
 			for tone in tone_names:
 				actual_emos[tone].append( img['comment_data'][tone] )
 				class_emos[tone].append( img['classifier_data'][tone] )

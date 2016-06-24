@@ -24,6 +24,7 @@ class Main:
 		self.train_fn = "train.csv"
 		self.data_dir = "../data/"
 
+
 	def main(self):
 		self.view_options()
 		while( True ):
@@ -71,6 +72,7 @@ class Main:
 		print("? : view options")
 		print("q : quit")
 
+
 	def update_files(self):
 		self.data_dir = input( "Enter data directory, leave blank for \'../data/\': " )
 		if( self.data_dir == "" ):
@@ -86,10 +88,6 @@ class Main:
 		if( self.test_fn == "" ):
 			self.test_fn = "test.csv"
 		print(" - Using {} as data file".format( self.data_dir + self.test_fn ) )
-		
-
-
-
 
 
 	def reddit_save_helper(self, data_dir, train_fn, test_fn):

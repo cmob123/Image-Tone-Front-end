@@ -20,9 +20,14 @@ def main():
 	save_submissions( n_posts = 2048, n_comments = 25, data_dir = "../data/", train_fn = "train.csv", test_fn = "test.csv")
 
 
+"""
+Pulls down top posts from reddit
+Analyzes the comments, and extracts tone data using the Watson APIs
+Saves ~50% of the data in a training file (using a repeatably seeded prng)
+Saves the rest in a testing file
+"""
 def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn = "train.csv", test_fn = "test.csv" ):
 	print( "Retrieving {} data points from r/pics".format( n_posts ) )
-# I'm not sure why these flush() calls are needed, but if they aren't there, nothing gets printed until the end
 	sys.stdout.flush()
 
 	# change to a if we want to append instead of overwrite
@@ -63,7 +68,7 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 			c_posts += 1
 
 			#Process the image, returns true if it processed successfully
-			if( process_image( sub, t, random.choice( [csvw_train, csvw_test]), n_comments, c_records ) ):
+			if( process_post( sub, t, random.choice( [csvw_train, csvw_test]), n_comments, c_records ) ):
 				c_records += 1
 				print( "Wrote record {}".format( c_records ) )
 				sys.stdout.flush()
@@ -75,7 +80,12 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 				f_test.close()
 				return
 
-def process_image( sub, ta, csvw_choice, n_comments, id_to_use):
+"""
+Processes a reddit image post, extracting comment data and storing it
+	in a csv file with a link to the image
+This csv file (once filled) is used to test and train visual classifiers
+"""
+def process_post( sub, ta, csvw_choice, n_comments, id_to_use):
 	if(len(sub.url) < 4):
 		return False
 	if( (sub.url[-4:] != ".jpg") and (sub.url[-4:] != ".png") ):
