@@ -101,7 +101,6 @@ class Main:
 				break
 			except ValueError:
 				continue
-		# TODO: number of files, number of comments
 		n_comments = 25
 		print( " - This could take some time, go get lunch or something" )
 		save_submissions( n_posts = n_posts, n_comments = n_comments, data_dir = data_dir, train_fn = train_fn, test_fn = test_fn)

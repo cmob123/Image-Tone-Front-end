@@ -8,7 +8,6 @@ import array
 
 def test_classifiers( vis_trainer, test_fn, data_dir ):
 	test_imgr = ImageRanker( test_fn, data_dir )
-	alpha_tone_names = sorted(tone_names)
 
 	vis_trainer.set_classifiers( vis_trainer.get_classifier_ids() )
 	image_data_set = []
