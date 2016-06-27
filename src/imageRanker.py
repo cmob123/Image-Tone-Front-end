@@ -105,8 +105,8 @@ class ImageRanker:
 			print("Could not make temporary directory, no files created:")
 			print( e.exc_info() )
 			return
-		pos_files = {}
-		neg_files = {}
+		pos_files = dict.fromkeys( tone_names )
+		neg_files = dict.fromkeys( tone_names )
 		# Create and open zip files
 		for tone in tone_names:
 			pos_files[tone] = zipfile.ZipFile( self.data_dir+tone+".zip", "w", zipfile.ZIP_DEFLATED )
