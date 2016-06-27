@@ -64,10 +64,8 @@ class ImageRanker:
 		for k,v in self.emotions.items():
 			top_third_scores[k] = bisect( 2/3, v )
 			bot_third_scores[k] = bisect( 1/3, v )
-		print( top_third_scores )
-		print( bot_third_scores )
-		self.pos_imgs = dict.fromkeys(tone_names, [])
-		self.neg_imgs = dict.fromkeys(tone_names, [])
+		#print( top_third_scores )
+		#print( bot_third_scores )
 		for img in self.images:
 			# Maybe exec?
 			img_scores = img["comment_data"]
@@ -78,16 +76,19 @@ class ImageRanker:
 
 			for tone in tone_names:
 				# This handles the confidant case: 75% of images have confidance of 0.0, leaving too few images to create a confidance class. We fudge things here to make it work
-				if( top_third_scores[tone] == 0.0 and img_scores[tone] == 0.0):
-					if( random.choice( [True, False] ) ):
-						img["strong_tones"].append( tone )
-						continue
-				if( img_scores[tone] <= bot_third_scores[tone] ):
+				if( bot_third_scores[tone] == 0.0 and img_scores[tone] == 0.0):
+					r = random.random( )
+					# Confidance is pretty rare on the internet
+					# If we take all weakly confidant images, the file is too big
+					# So we only take half of them
+					# The exact number might need to be adjusted with more data
+					# It's pretty trial and error
+					if( r < 1/2 ):
+						img["weak_tones"].append( tone )
+				elif( img_scores[tone] <= bot_third_scores[tone] ):
 					img["weak_tones"].append( tone )
-					self.neg_imgs[tone].append( img )
 				elif( img_scores[tone] > top_third_scores[tone] ):
 					img["strong_tones"].append( tone )
-					self.pos_imgs[tone].append( img )
 		return
 	
 	"""
