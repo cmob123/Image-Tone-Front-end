@@ -11,6 +11,16 @@ import os
 data_fieldnames = ["name", "actual_data", "classifier_data"]
 data_fn = "data.csv"
 
+"""
+Tests the classifiers performance against new, pre-analyzed test data
+Calculates and prints the correlation coefficients between the
+	tone analysis values and the confidance levels that our classifiers
+	give us
+If a data file already exists, it will ask if you want to use it
+If there is no data file, or you answer no, it will create one by
+	classifying all images in the test file
+TODO: Verify existance (and read permission) of test file.
+"""
 def test_classifiers( vis_trainer, test_fn, data_dir ):
 	data_f_path = data_dir + data_fn
 	if( os.path.exists( data_f_path ) ):
@@ -40,6 +50,13 @@ def test_classifiers( vis_trainer, test_fn, data_dir ):
 	for tone in tone_names:
 		print( "Correlation coefficient of {}: {}".format( tone, correlation_coefficient( class_emos[tone], actual_emos[tone] ) ) )
 
+"""
+Creates a 'data.csv' file in the data directory that contains both tone
+	analysis data about a post, as well as the confidance values for each
+	classifier class.
+This data file is used to gauge the effectiveness of our classifiers
+TODO: Verify existance of test_fn and data_fn in data_dir
+"""
 def classify_data( vis_trainer, test_fn, data_dir ):
 	vis_trainer.set_classifiers( vis_trainer.get_classifier_ids() )
 	f_data = open( data_dir + data_fn, "w", newline="" )
