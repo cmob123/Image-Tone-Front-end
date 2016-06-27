@@ -6,13 +6,22 @@ import sys
 import numpy
 import array
 import ast
+import os
 
 data_fieldnames = ["name", "actual_data", "classifier_data"]
 data_fn = "data.csv"
 
 def test_classifiers( vis_trainer, test_fn, data_dir ):
-	#classify_data( vis_trainer, test_fn, data_dir )
-	f_data = open( data_dir + data_fn )
+	data_f_path = data_dir + data_fn
+	if( os.path.exists( data_f_path ) ):
+		text = input( "An existing '{}' file was found, do you want to use that? (y/n) ".format( data_fn) )
+		while( text != "y" and text != "n" ):
+			text = input( "(y/n) " )
+		if( text == "n" ):
+			classify_data( vis_trainer, test_fn, data_dir )
+	else:
+		classify_data( vis_trainer, test_fn, data_dir )
+	f_data = open( data_f_path )
 	csvr_data = csv.DictReader( f_data )
 
 	actual_emos = {tone : [] for tone in tone_names }

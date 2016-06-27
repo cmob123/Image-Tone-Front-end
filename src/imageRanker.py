@@ -99,7 +99,7 @@ class ImageRanker:
 	def write_pos_neg_files( self ):
 		tmp_dir_name = self.data_dir + "tmp/"
 		try:
-			if( not os.path.exists(tmp_dir_name) ):
+			if( not os.path.exists( tmp_dir_name ) ):
 				os.makedirs( tmp_dir_name )
 		except OSError as e:
 			print("Could not make temporary directory, no files created:")
