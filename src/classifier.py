@@ -1,6 +1,6 @@
 import json
 import time
-from watson_developer_cloud import VisualRecognitionV3
+from watson_developer_cloud import VisualRecognitionV3, WatsonException
 #from visual_recognition_v3 import VisualRecognitionV3
 import requests
 import sys
@@ -9,7 +9,8 @@ from tone import tone_names
 
 
 
-apikey = "dfb48eeb05a0258553c5aa5371426e50cee88bc9"
+#apikey = "dfb48eeb05a0258553c5aa5371426e50cee88bc9"
+apikey = "cb413d69a797e117154d8474ea7397a04866551a"
 
 # A class to analyze tone, some sort of ... Tone Analyzer
 # Really only handles emotion data
@@ -32,12 +33,12 @@ class VisualTrainer:
 
 	Prompts before constructing the new classifier
 	"""
-	def new_classifier( self, classifier_name, class_names, zipfiles, neg_zipfile, prompt = True ):
+	def new_classifier( self, classifier_name, class_names, zipfiles, neg_zipfile, prompt=True ):
 		if( prompt ):
 			print( "Are you sure you want to create a new classifier" )
 			print( "Current classifier list is:" )
 			self.list_classifiers()
-			text = input( "Type 'YES' to continue creating classifier \"{}\": ".format( classifier_name ) )
+			text = input( "Type 'YES' to continue creating classifier '{}': ".format( classifier_name ) )
 			if( text != "YES" ):
 				print( "exiting, no classifier created" )
 				return None
@@ -53,7 +54,7 @@ class VisualTrainer:
 		# I wouldn't touch this if I were you
 		for i in range( 0, n_classes ):
 			zipf_name = class_names[i] + "_zip"
-			exec( "{} = open( \"{}\", \"rb\")".format( zipf_name, zipfiles[i] ))
+			exec( "{} = open( '{}', 'rb')".format( zipf_name, zipfiles[i] ))
 			exec( "open_files.append( {} )".format( zipf_name ) )
 			arguments_str += "{}_positive_examples={}, ".format( class_names[i], zipf_name )
 			#print( arguments_str )
@@ -61,18 +62,28 @@ class VisualTrainer:
 		neg_zip = open( neg_zipfile, "rb" )
 		open_files.append( neg_zip )
 		arguments_str += "negative_examples=neg_zip"
-		exec_str = "ret_json = self.v.create_classifier( \"{}\", {} )".format( classifier_name, arguments_str)
+		exec_str = "ret_json = self.v.create_classifier( '{}', {} )".format( classifier_name, arguments_str)
 		#print( exec_str )
-		exec( exec_str )
+		try:
+			exec( exec_str )
+		except:
+			print( "Something went wrong, could not make {} classifier".format( classifier_name ) )
+			print( sys.exc_info()[0] )
 		for f in open_files:
 			f.close()
 		print( "Finished creating classifier {}".format( classifier_name ) )
+		sys.stdout.flush()
 		return
 
 	# Prints an unformatted, verbose list of all classifiers
 	# Used soley for debugging, probably
-	def list_classifiers(self):
-		print( json.dumps( self.v.list_classifiers( verbose = False ), indent=2) )
+	def list_classifiers( self ):
+		try:
+			print( json.dumps( self.v.list_classifiers( verbose = False ), indent=2) )
+		except WatsonException as e:
+			print( "Something went wrong, maybe watson is down" )
+			print( e )
+
 
 	def set_classifiers( self, c_list ):
 		self.classifier_list = c_list
@@ -84,7 +95,7 @@ class VisualTrainer:
 	def classify_zip_file( self, open_file ):
 		to_ret = self.v.classify( images_file = img_file, classifier_ids = self.classifier_list, threshold = 0.0 )
 		return to_ret
-		
+
 
 	"""
 	Classifies a single image using all classifiers we have created
@@ -94,10 +105,12 @@ class VisualTrainer:
 	def classify_single_image( self, url ):
 		to_ret = None
 		try:
-			to_ret = self.v.classify( images_url = url, classifier_ids = self.classifier_list, threshold = 0.0)
+			to_ret = self.v.classify( images_url=url, classifier_ids=self.classifier_list, threshold=0.0 )
+			#print( json.dumps( to_ret, indent=2 ) )
 		except:
 			print("Error in classifying {}".format( url ) )
 			print( sys.exc_info()[0] )
+
 		return to_ret
 
 	"""
@@ -127,7 +140,7 @@ class VisualTrainer:
 	Delete all classifiers. They are unrecoverable
 	If prompt is given as false, this will not confirm your choice, it will just delete everything
 	"""
-	def del_all_classifiers( self, prompt = True ):
+	def del_all_classifiers( self, prompt=True ):
 		if( prompt ):
 			text = input( "This will delete ALL classifiers. Type 'YES' if you really want to do this: ")
 			if( text != "YES" ):
@@ -136,7 +149,7 @@ class VisualTrainer:
 
 		# Either they typed YES, or prompt is False
 		# Proceed to delete everything
-		class_list = self.v.list_classifiers( verbose = True )
+		class_list = self.v.list_classifiers( verbose=True )
 		for c in class_list["classifiers"]:
 			self.v.delete_classifier( c["classifier_id"] )
 
