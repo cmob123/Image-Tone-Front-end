@@ -47,6 +47,8 @@ class ImageRanker:
 			self.images.append( new_img )
 		csvfile.close()
 
+
+
 		assert( set(tone_names) == set(self.emotions.keys()) )
 		assert( set(tone_names) == set(self.title_emotions.keys()) )
 		self.sort_pos_neg()
@@ -58,7 +60,6 @@ class ImageRanker:
 		based on whether they are in the top or bottom 1/3
 	"""
 	def sort_pos_neg( self ):
-		#TODO, why are these all the same
 		top_third_scores = dict.fromkeys( self.emotions.keys() )
 		bot_third_scores = dict.fromkeys( self.emotions.keys() )
 		for k,v in self.emotions.items():
@@ -78,7 +79,7 @@ class ImageRanker:
 				# This handles the confidant case: 75% of images have confidance of 0.0, leaving too few images to create a confidance class. We fudge things here to make it work
 				if( bot_third_scores[tone] == 0.0 and img_scores[tone] == 0.0):
 					r = random.random( )
-					# Confidance is pretty rare on the internet
+					# Confidence is pretty rare on the internet
 					# If we take all weakly confidant images, the file is too big
 					# So we only take half of them
 					# The exact number might need to be adjusted with more data

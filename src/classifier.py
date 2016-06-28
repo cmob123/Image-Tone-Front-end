@@ -12,8 +12,6 @@ from tone import tone_names
 #apikey = "dfb48eeb05a0258553c5aa5371426e50cee88bc9"
 apikey = "cb413d69a797e117154d8474ea7397a04866551a"
 
-# A class to analyze tone, some sort of ... Tone Analyzer
-# Really only handles emotion data
 class VisualTrainer:
 
 	v = None
@@ -79,7 +77,7 @@ class VisualTrainer:
 	# Used soley for debugging, probably
 	def list_classifiers( self ):
 		try:
-			print( json.dumps( self.v.list_classifiers( verbose = False ), indent=2) )
+			print( json.dumps( self.v.list_classifiers( verbose=False ), indent=2) )
 		except WatsonException as e:
 			print( "Something went wrong, maybe watson is down" )
 			print( e )
@@ -90,10 +88,10 @@ class VisualTrainer:
 
 	# deletes a classifier
 	def del_classifier( self, classifier_id ):
-			self.v.delete_classifier( classifier_id)
+			self.v.delete_classifier( classifier_id )
 
 	def classify_zip_file( self, open_file ):
-		to_ret = self.v.classify( images_file = img_file, classifier_ids = self.classifier_list, threshold = 0.0 )
+		to_ret = self.v.classify( images_file=img_file, classifier_ids=self.classifier_list, threshold=0.0 )
 		return to_ret
 
 
