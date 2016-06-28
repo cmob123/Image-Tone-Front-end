@@ -98,5 +98,6 @@ def print_info( data ):
 	print("Min: {}".format( numpy.min(data) ) )
 	print("Max: {}".format( numpy.max(data) ) )
 	print("Mean: {}".format( numpy.mean(data) ) )
+	print("StdDev: {}".format( numpy.std( data ) ) )
 	return
 
