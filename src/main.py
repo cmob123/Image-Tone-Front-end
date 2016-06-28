@@ -46,9 +46,10 @@ class Main:
 				self.v.list_classifiers()
 			elif( text == "i" ):
 				url = input(" url? : ")
-				self.v.set_classifiers( self.v.get_classifier_ids() )
+				#self.v.set_classifiers( self.v.get_classifier_ids() )
 				j = self.v.classify_single_image( url )
-				self.v.pp_classify_response( j )
+				if( j is not None ):
+					self.v.pp_classify_response( j )
 			elif( text == "f" ):
 				self.update_files()
 			elif( text == "t" ):
@@ -84,7 +85,7 @@ class Main:
 			self.train_fn = "train.csv"
 		print(" - Using {} as data file".format( self.data_dir + self.train_fn ) )
 
-		self.test_fn = input( "Enter the name of the testing csv file, leave blank for 'test.csv\: " )
+		self.test_fn = input( "Enter the name of the testing csv file, leave blank for 'test.csv : " )
 		if( self.test_fn == "" ):
 			self.test_fn = "test.csv"
 		print(" - Using {} as data file".format( self.data_dir + self.test_fn ) )
