@@ -1,16 +1,14 @@
 language: python
 sudo: false
-notifications:
-  email: false
-  python:
+python:
   - '2.7'
   - '3.2'
   - '3.3'
   - '3.4'
   - '3.5'
   - '3.5-dev'
-  install:
+install:
   - pip install watson-developer-cloud
   - pip install numpy
   - pip install PRAW
-  script: echo foo
+script: echo foo
