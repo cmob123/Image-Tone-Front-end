@@ -124,9 +124,10 @@ class VisualTrainer:
 		try:
 			ret = self.v.classify( images_url=url, classifier_ids=self.classifier_list, threshold=0.0 )
 			#print( json.dumps( to_ret, indent=2 ) )
-		except:
+		except WatsonException as e:
 			print("Error in classifying {}".format( url ) )
-			print( sys.exc_info()[0] )
+			print( e )
+			return None
 		return ret
 
 	"""
