@@ -68,28 +68,21 @@ def classify_data( vis_trainer, test_fn, data_dir ):
 	for img in test_imgr.images:
 		i += 1
 		url = img["url"]
-		post_name = img["name"]
-		actual_data = img["comment_data"]
 
 		j = vis_trainer.classify_single_image( url )
 		if( j is None ):
 			continue
-
-		classifier_data = {}
-		try:
-			for classifier in j["images"][0]["classifiers"]:
-				name = classifier["classes"][0]["class"]
-				score = classifier["classes"][0]["score"]
-				classifier_data[ name ] = score
-			img["classifier_data"] = classifier_data
-		except KeyError as e:
-			print( "KeyError: {} possibly because the image is too big".format( e ) )
-			print( json.dumps( j, indent=2 ) )
+		classifier_data = vis_trainer.dict_from_json( j )
+		if( classifier_data is None ):
 			continue
-		print( "Classified {} successfully. ({}/{})".format( url, i, len( test_imgr.images) ) )
+		print( "Classified {} successfully. ({}/{})".format( 
+			url, i, len( test_imgr.images) ) )
 		#print( classifier_data.keys() )
 		#print( actual_data.keys() )
 		sys.stdout.flush()
+
+		post_name = img["name"]
+		actual_data = img["comment_data"]
 		assert( set( classifier_data.keys() ) == set( actual_data.keys() ) )
 		row = {
 			"name": post_name,

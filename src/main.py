@@ -46,9 +46,10 @@ class Main:
 				self.v.list_classifiers()
 			elif( text == "i" ):
 				url = input(" url? : ")
-				#self.v.set_classifiers( self.v.get_classifier_ids() )
+				self.v.set_classifiers( self.v.get_classifier_ids() )
 				j = self.v.classify_single_image( url )
 				if( j is not None ):
+					#print( json.dumps( j, indent=2 ) )
 					self.v.pp_classify_response( j )
 			elif( text == "f" ):
 				self.update_files()
