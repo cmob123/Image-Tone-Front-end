@@ -47,12 +47,11 @@ class ImageRanker:
 			self.images.append( new_img )
 		csvfile.close()
 
-
-
 		assert( set(tone_names) == set(self.emotions.keys()) )
 		assert( set(tone_names) == set(self.title_emotions.keys()) )
 		self.sort_pos_neg()
 		return
+
 
 	"""
 	Sorts the images in the top and bottom 1/3 of each emotion
@@ -65,10 +64,7 @@ class ImageRanker:
 		for k,v in self.emotions.items():
 			top_third_scores[k] = bisect( 2/3, v )
 			bot_third_scores[k] = bisect( 1/3, v )
-		#print( top_third_scores )
-		#print( bot_third_scores )
 		for img in self.images:
-			# Maybe exec?
 			img_scores = img["comment_data"]
 
 			assert( set( tone_names ) == set( img_scores.keys() ) )
@@ -76,14 +72,15 @@ class ImageRanker:
 			img["weak_tones"] = []
 
 			for tone in tone_names:
-				# This handles the confidant case: 75% of images have confidance of 0.0, leaving too few images to create a confidance class. We fudge things here to make it work
 				if( bot_third_scores[tone] == 0.0 and img_scores[tone] == 0.0):
 					r = random.random( )
 					# Confidence is pretty rare on the internet
-					# If we take all weakly confidant images, the file is too big
+					# If we take all weakly confident images, the file is too big
 					# So we only take half of them
 					# The exact number might need to be adjusted with more data
-					# It's pretty trial and error
+					# It's pretty trial and error, but it works
+					# Also note that with small samples, the positive file
+					# may become too small
 					if( r < 1/2 ):
 						img["weak_tones"].append( tone )
 				elif( img_scores[tone] <= bot_third_scores[tone] ):
@@ -108,6 +105,7 @@ class ImageRanker:
 			return
 		pos_files = dict.fromkeys( tone_names )
 		neg_files = dict.fromkeys( tone_names )
+
 		# Create and open zip files
 		for tone in tone_names:
 			pos_files[tone] = zipfile.ZipFile( self.data_dir+tone+".zip", "w", zipfile.ZIP_DEFLATED )
@@ -133,16 +131,19 @@ class ImageRanker:
 					print( str(e) )
 					continue
 
-			# Got the file, now to add it to some zip files
-			#TODO: Check if file size is 503 bytes. That is the size of "removed.png" in imgur. If so, don't bother using it
-			# The reason we use new_path and new_filename is due to the way
-			# "/"s vs "\"s are resolved by the zipfile module
+			# imgur's "removed.png" file is 503 bytes, far smaller than
+			# 	any other sampled image. Since I can't figure out a better way
+			#	to do this, I just check if the image is 503 bytes, then
+			#	ignore it if it is
 			fstat = os.stat( new_path )
 			print( fstat.st_size )
 			if( fstat.st_size == 503 ):
 				print( "I think this is a removed image: {}".format( new_path ) )
 				continue
 
+			# Got the file, now to add it to some zip files
+			# The reason we use new_path and new_filename is due to the way
+			# "/"s vs "\"s are resolved by the zipfile module
 			for emo in img["strong_tones"]:
 				pos_files[emo].write( new_path, new_filename )
 			for emo in img["weak_tones"]:

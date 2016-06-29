@@ -75,6 +75,12 @@ class Main:
 		print( "q : quit" )
 
 
+	"""
+	Prompts the user to update test and train files, as well
+	as the data directory.
+	If this was going to see widespread use, I would have a submenu,
+		but it isn't, so won't
+	"""
 	def update_files( self ):
 		self.data_dir = input( "Enter data directory, leave blank for '../data/': " )
 		if( self.data_dir == "" ):
@@ -92,6 +98,9 @@ class Main:
 		print(" - Using {} as data file".format( self.data_dir + self.test_fn ) )
 
 
+	"""
+	Sets up some of the messy stuff before we call redditDataSaver's functions
+	"""
 	def reddit_save_helper( self, data_dir, train_fn, test_fn ):
 		n_posts = ""
 		while( True ):
