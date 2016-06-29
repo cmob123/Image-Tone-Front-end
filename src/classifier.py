@@ -14,6 +14,10 @@ class VisualTrainer:
 
 	v = None
 	
+	"""
+	Note: After constructing one of these bad boys, you probably want
+	to call set_classifiers()
+	"""
 	def __init__(self):
 		self.v = VisualRecognitionV3( "2016-05-20", api_key=apikey )
 		self.classifier_list = None
@@ -52,18 +56,19 @@ class VisualTrainer:
 			zipf_name = class_names[i] + "_zip"
 			exec( "{} = open( '{}', 'rb')".format( zipf_name, zipfiles[i] ))
 			exec( "open_files.append( {} )".format( zipf_name ) )
-			arguments_str += "{}_positive_examples={}, ".format( class_names[i], zipf_name )
-			#print( arguments_str )
+			arguments_str += "{}_positive_examples={}, ".format( 
+					class_names[i], zipf_name )
 
 		neg_zip = open( neg_zipfile, "rb" )
 		open_files.append( neg_zip )
 		arguments_str += "negative_examples=neg_zip"
-		exec_str = "ret_json = self.v.create_classifier( '{}', {} )".format( classifier_name, arguments_str)
-		#print( exec_str )
+		exec_str = "ret_json = self.v.create_classifier( '{}', {} )".format( 
+				classifier_name, arguments_str)
 		try:
 			exec( exec_str )
 		except:
-			print( "Something went wrong, could not make {} classifier".format( classifier_name ) )
+			print( "Something went wrong, could not make {} classifier".format( 
+					classifier_name ) )
 			print( sys.exc_info()[0] )
 		for f in open_files:
 			f.close()
@@ -71,8 +76,10 @@ class VisualTrainer:
 		sys.stdout.flush()
 		return
 
-	# Prints an unformatted, verbose list of all classifiers
-	# Used soley for debugging, probably
+	"""
+	Prints the json-formatted list of all classifiers
+	In the future, we may want to have a prettier way of doing this
+	"""
 	def list_classifiers( self ):
 		try:
 			print( json.dumps( self.v.list_classifiers( verbose=False ), indent=2) )
@@ -84,13 +91,42 @@ class VisualTrainer:
 	def set_classifiers( self, c_list ):
 		self.classifier_list = c_list
 
-	# deletes a classifier
 	def del_classifier( self, classifier_id ):
 			self.v.delete_classifier( classifier_id )
 
+	"""
+	Classifies a single image using all classifiers we have created
+	Returns a json struct containing all classification probabilities, no matter how small
+	"""
+	def classify_single_image( self, url ):
+		ret = None
+		try:
+			ret = self.v.classify( 
+				images_url=url, 
+				classifier_ids=self.classifier_list, 
+				threshold=0.0 )
+		except WatsonException as e:
+			print("Error in classifying {}".format( url ) )
+			print( e )
+			return None
+		return ret
+
+	"""
+	Like the previous function, but works on a compressed
+	zip file of images
+	YMMV, especially when passing this to other functions in this class
+	"""
 	def classify_zip_file( self, open_file ):
-		to_ret = self.v.classify( images_file=img_file, classifier_ids=self.classifier_list, threshold=0.0 )
-		return to_ret
+		ret = None
+		try:
+			ret = self.v.classify( 
+				images_file=img_file, 
+				classifier_ids=self.classifier_list, 
+				threshold=0.0 )
+		except WatsonException as e:
+			print( e )
+			return None
+		return ret
 
 	"""
 	takes a json object like the one returned by classify_single_image
@@ -114,21 +150,6 @@ class VisualTrainer:
 		
 
 
-	"""
-	Classifies a single image using all classifiers we have created
-	Returns a json struct containing all classification probabilities, no matter how small
-	As a side effect, pretty prints the classification details
-	"""
-	def classify_single_image( self, url ):
-		ret = None
-		try:
-			ret = self.v.classify( images_url=url, classifier_ids=self.classifier_list, threshold=0.0 )
-			#print( json.dumps( to_ret, indent=2 ) )
-		except WatsonException as e:
-			print("Error in classifying {}".format( url ) )
-			print( e )
-			return None
-		return ret
 
 	"""
 	pretty print the classifier response in a format like
@@ -183,11 +204,12 @@ class VisualTrainer:
 			print( str( e ) )
 			return to_ret
 
-	# Start from the ground up, nuke all classifiers and rebuild them.
-	# There are very few good reasons to call this. The primary one being that the data has been updated
+	"""
+	Rebuilds all classifiers based on zip files in the data directory.
+	Make sure you called the appropriate method in imageRanker before
+	calling this.
+	"""
 	def rebuild_classifiers( self, data_dir = "../data/" ):
-		# make tone names lowercase
-		# lc_tone_names = map( (lambda x: x.lower()), tone_names )
 		for tone in tone_names:
 			classifier_name = tone + "class"
 			class_name = tone
@@ -201,30 +223,3 @@ class VisualTrainer:
 				False )
 		print( "Finished rebuilding classifiers, the new list is: " )
 		self.v.list_classifiers()
-
-def main( args ):
-	vis = VisualTrainer()
-	i = ImageRanker( "data.csv", "../data/" )
-	vis.rebuild_classifiers( )
-	vis.list_classifiers()
-	return
-	vis.set_classifiers( vis.get_classifier_ids() )
-	text = input( "Enter an image link or zip file to classify -> " )
-	while( text != "" ):
-		print( text )
-		if( text[-4:] == ".zip" ):
-			f = open( text, "rb" )
-			j = vis.classify_zip_file( f )
-			vis.pp_classify_response( j )
-
-		elif( text[-4:] == ".jpg" or text[-4:] == ".png" ):
-			j= vis.classify_single_image( text )
-			print( json.dumps( j, indent=2 ) )
-			vis.pp_classify_response( j )
-		else:
-			print( "Sorry, i didn't understand that file type" )
-		text = input( "Enter an image link or zip file to classify -> " )
-
-
-if( __name__ == "__main__" ):
-	main( sys.argv[1:] )
