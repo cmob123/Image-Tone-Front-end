@@ -137,6 +137,12 @@ class ImageRanker:
 			#TODO: Check if file size is 503 bytes. That is the size of "removed.png" in imgur. If so, don't bother using it
 			# The reason we use new_path and new_filename is due to the way
 			# "/"s vs "\"s are resolved by the zipfile module
+			fstat = os.stat( new_path )
+			print( fstat.st_size )
+			if( fstat.st_size == 503 ):
+				print( "I think this is a removed image: {}".format( new_path ) )
+				continue
+
 			for emo in img["strong_tones"]:
 				pos_files[emo].write( new_path, new_filename )
 			for emo in img["weak_tones"]:
