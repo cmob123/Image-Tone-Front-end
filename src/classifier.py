@@ -8,9 +8,7 @@ from imageRanker import *
 from tone import tone_names
 
 
-
-#apikey = "dfb48eeb05a0258553c5aa5371426e50cee88bc9"
-apikey = "cb413d69a797e117154d8474ea7397a04866551a"
+apikey = "dfb48eeb05a0258553c5aa5371426e50cee88bc9"
 
 class VisualTrainer:
 
@@ -94,6 +92,27 @@ class VisualTrainer:
 		to_ret = self.v.classify( images_file=img_file, classifier_ids=self.classifier_list, threshold=0.0 )
 		return to_ret
 
+	"""
+	takes a json object like the one returned by classify_single_image
+	Returns a dict containing all classes, and their associated confidence
+		values
+	Returns None on error
+	"""
+	def dict_from_json( self, j ):
+		# Maybe we should treat this more like an error?
+		if( j is None ):
+			return None
+		try:
+			ret = {}
+			for classifier in j["images"][0]["classifiers"]:
+				for c in classifier["classes"]:
+					ret[ c["class"] ] = c["score"]
+		except KeyError as e:
+			print( "Key error, something went wrong classifying this image" )
+			return None
+		return ret
+		
+
 
 	"""
 	Classifies a single image using all classifiers we have created
@@ -101,15 +120,14 @@ class VisualTrainer:
 	As a side effect, pretty prints the classification details
 	"""
 	def classify_single_image( self, url ):
-		to_ret = None
+		ret = None
 		try:
-			to_ret = self.v.classify( images_url=url, classifier_ids=self.classifier_list, threshold=0.0 )
+			ret = self.v.classify( images_url=url, classifier_ids=self.classifier_list, threshold=0.0 )
 			#print( json.dumps( to_ret, indent=2 ) )
 		except:
 			print("Error in classifying {}".format( url ) )
 			print( sys.exc_info()[0] )
-
-		return to_ret
+		return ret
 
 	"""
 	pretty print the classifier response in a format like
@@ -120,19 +138,18 @@ class VisualTrainer:
 	This expects the format returned by classify_single_image
 	"""
 	def pp_classify_response( self, some_json):
-		try:
-			for i in some_json["images"]:
-				if( "error" in i ):
-					print( "Error in image" )
-					continue
-				for c in i["classifiers"]:
-					for cl in c["classes"]:
-						print("{} : {}".format( cl["class"], cl["score"] ) )
-		except KeyError as e:
-			print( "KeyError when printing the classify response" )
-			print( "Maybe something went wrong in classification?" )
-			print( e )
+		if( some_json is None ):
+			print( "Error: Expected json object, got NoneType" )
+			return
+		d_tmp = self.dict_from_json( some_json )
+		if( d_tmp is None ):
+			print( "Error: classifier response was invalid" )
+			print( json.dumps( some_json, indent=2 ) )
+			return
 
+		# Nothing past here should result in an error, we're just printing a dict
+		for k,v in d_tmp.items():
+			print( "{}: {}".format( k, v ) )
 
 	"""
 	Delete all classifiers. They are unrecoverable
@@ -180,7 +197,7 @@ class VisualTrainer:
 				[class_name],
 				[filename],
 				neg_filename,
-				True )
+				False )
 		print( "Finished rebuilding classifiers, the new list is: " )
 		self.v.list_classifiers()
 
