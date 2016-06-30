@@ -132,11 +132,10 @@ class ImageRanker:
 					continue
 
 			# imgur's "removed.png" file is 503 bytes, far smaller than
-			# 	any other sampled image. Since I can't figure out a better way
-			#	to do this, I just check if the image is 503 bytes, then
+			#	any other sampled image. Since I can't figure out a better way
+			#	to do this, I just check if the image is 503 bytes, and
 			#	ignore it if it is
 			fstat = os.stat( new_path )
-			print( fstat.st_size )
 			if( fstat.st_size == 503 ):
 				print( "I think this is a removed image: {}".format( new_path ) )
 				continue

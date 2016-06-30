@@ -14,7 +14,8 @@ from tone import ToneAnalyzer
 
 fieldnames = [
 	"name", "arbitrary_id", "url", "title", 
-	"title_data", "comments", "comment_data"]
+	"title_data", "comments", "comment_data",
+	"default_classifier_data"]
 
 def main():
 	save_submissions( n_posts=2048, n_comments=25, data_dir="../data/", train_fn="train.csv", test_fn="test.csv")
@@ -85,7 +86,7 @@ Processes a reddit image post, extracting comment data and storing it
 	in a csv file with a link to the image
 This csv file (once filled) is used to test and train visual classifiers
 """
-def process_post( sub, ta, csvw_choice, n_comments, id_to_use):
+def process_post( sub, ta, csvw_choice, n_comments, id_to_use, vis_classifier ):
 	if(len(sub.url) < 4):
 		return False
 	if( (sub.url[-4:] != ".jpg") and (sub.url[-4:] != ".png") ):
@@ -110,6 +111,13 @@ def process_post( sub, ta, csvw_choice, n_comments, id_to_use):
 	title_tone = ta.tone_analyze( sub.title )
 	title_data = ta.tone_all_num_extract( title_tone )
 
+	j = vis_classifier.classify_single_image( sub.url )
+	if( j is None ):
+		return False
+	d_tmp = vis_classifier.dict_from_json( j )
+	if( d_tmp is None ):
+		return False
+
 	post_data = { 
 		"name": sub.name,
 		"arbitrary_id": id_to_use,
@@ -117,7 +125,8 @@ def process_post( sub, ta, csvw_choice, n_comments, id_to_use):
 		"title": sub.title,
 		"title_data": title_data,
 		"comments": comment_concat,
-		"comment_data": comment_data}
+		"comment_data": comment_data,
+		"default_classifier_data": d_tmp}
 		
 	try:
 		csvw_choice.writerow( post_data )
