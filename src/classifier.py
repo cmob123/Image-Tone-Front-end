@@ -8,7 +8,7 @@ from imageRanker import *
 from tone import tone_names
 
 
-apikey = "dfb48eeb05a0258553c5aa5371426e50cee88bc9"
+apikey = "2ef84568cc6ca748cbf608a78de48c85b269d8aa"
 
 class VisualTrainer:
 
@@ -16,10 +16,13 @@ class VisualTrainer:
 	
 	"""
 	Note: After constructing one of these bad boys, you probably want
-	to call set_classifiers()
+	to call set_classifiers(), even if just using the default
 	"""
 	def __init__(self):
-		self.v = VisualRecognitionV3( "2016-05-20", api_key=apikey )
+		self.v = VisualRecognitionV3( 
+			version="2016-05-20",
+			url="https://gateway-a.watsonplatform.net/visual-recognition/api", 
+			api_key=apikey )
 		self.classifier_list = None
 	
 	"""
@@ -66,14 +69,14 @@ class VisualTrainer:
 				classifier_name, arguments_str)
 		try:
 			exec( exec_str )
-		except:
+			print( "Finished creating classifier {}".format( classifier_name ) )
+			sys.stdout.flush()
+		except WatsonException as e:
 			print( "Something went wrong, could not make {} classifier".format( 
 					classifier_name ) )
-			print( sys.exc_info()[0] )
+			print( e )
 		for f in open_files:
 			f.close()
-		print( "Finished creating classifier {}".format( classifier_name ) )
-		sys.stdout.flush()
 		return
 
 	"""
@@ -192,17 +195,21 @@ class VisualTrainer:
 
 	# Return a list of all classifier ids known to Watson, excluding default
 	def get_classifier_ids( self ):
-		to_ret = []
-		class_list = self.v.list_classifiers( verbose = False )
+		ret = []
+		try:
+			class_list = self.v.list_classifiers( verbose = False )
+		except WatsonException as e:
+			print( e )
+			return ret
 		try:
 			for c in class_list["classifiers"]:
 				if( c["status"] == "ready" ):
-					to_ret.append( c["classifier_id"] )
-			return to_ret
+					ret.append( c["classifier_id"] )
 		except KeyError as e:
 			print( "Error in fetching classifier ids" )
 			print( str( e ) )
-			return to_ret
+			return ret
+		return ret
 
 	"""
 	Rebuilds all classifiers based on zip files in the data directory.
@@ -220,6 +227,6 @@ class VisualTrainer:
 				[class_name],
 				[filename],
 				neg_filename,
-				False )
+				True )
 		print( "Finished rebuilding classifiers, the new list is: " )
 		self.v.list_classifiers()

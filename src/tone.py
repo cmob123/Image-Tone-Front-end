@@ -44,17 +44,18 @@ class ToneAnalyzer:
 			return self.tone_analyze( text )
 
 	def tone_all_num_extract( self, doc_tone ):
+		ret = {}
 		try:
-			to_ret = {}
 			for t in doc_tone["tone_categories"]:
 				for e in t["tones"]:
 					# Can't have spaces in tone names, only relevant for Emotional Range
 					tone_name = e["tone_name"].replace( " ", "_" )
-					to_ret[ tone_name ] = e["score"]
-			return to_ret
+					ret[ tone_name ] = e["score"]
 		except:
 			print("Failed to extract tone data")
 			print( sys.exc_info()[0] )
+			return None
+		return ret
 
 	
 	# Discards writing style and personality data, returning
