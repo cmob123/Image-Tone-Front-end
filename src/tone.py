@@ -1,7 +1,7 @@
 import json
 import time
 import sys
-from watson_developer_cloud import ToneAnalyzerV3
+from watson_developer_cloud import ToneAnalyzerV3, WatsonException
 
 tone_names = [
 	"Anger", 
@@ -35,13 +35,13 @@ class ToneAnalyzer:
 	def tone_analyze( self, text ):
 		try:
 			raw_json = self.tone_analyzer.tone( text=text )
-			return raw_json["document_tone"]
-		except:
-			print( raw_json )
-			print( "Looks like we're being rate limited. Waiting and trying again" )
+		except WatsonException as e:
+			print( "Looks like we're being rate limited" )
+			print( e )
 			time.sleep( 60 )
-			# This is fine, nothing wrong here
 			return self.tone_analyze( text )
+		if( "document_tone" in raw_json ):
+			return raw_json["document_tone"]
 
 	def tone_all_num_extract( self, doc_tone ):
 		ret = {}
@@ -77,7 +77,3 @@ class ToneAnalyzer:
 		for e in emotions:
 			nums.append( e["score"] )
 		return nums
-
-t = ToneAnalyzer()
-j = t.tone_analyze( "Do not ask for whom the bell tolls, it tolls for thee" )
-t.tone_all_num_extract( j )

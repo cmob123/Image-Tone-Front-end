@@ -32,7 +32,7 @@ class Main:
 			if( text == "?" ):
 				self.view_options()
 			elif( text == "r" ):
-				self.reddit_save_helper( self.data_dir, self.train_fn, self.test_fn )
+				self.reddit_save_helper( self.data_dir, self.train_fn, self.test_fn, v=self.v )
 			elif( text == "z" ):
 				i = ImageRanker( self.train_fn, self.data_dir )
 				i.write_pos_neg_files()
@@ -101,7 +101,7 @@ class Main:
 	"""
 	Sets up some of the messy stuff before we call redditDataSaver's functions
 	"""
-	def reddit_save_helper( self, data_dir, train_fn, test_fn ):
+	def reddit_save_helper( self, data_dir, train_fn, test_fn, v ):
 		n_posts = ""
 		while( True ):
 			str_n_posts = input( "How many records do you want to retrieve? ")
@@ -112,7 +112,8 @@ class Main:
 				continue
 		n_comments = 25
 		print( " - This could take some time, go get lunch or something" )
-		save_submissions( n_posts=n_posts, n_comments=n_comments, data_dir=data_dir, train_fn=train_fn, test_fn=test_fn )
+		v.set_classifiers(None)
+		save_submissions( n_posts=n_posts, n_comments=n_comments, data_dir=data_dir, train_fn=train_fn, test_fn=test_fn, v=v )
 		print( " - Finished saving reddit data" )
 
 

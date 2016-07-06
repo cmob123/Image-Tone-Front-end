@@ -62,8 +62,8 @@ class ImageRanker:
 		top_third_scores = dict.fromkeys( self.emotions.keys() )
 		bot_third_scores = dict.fromkeys( self.emotions.keys() )
 		for k,v in self.emotions.items():
-			top_third_scores[k] = bisect( 2/3, v )
-			bot_third_scores[k] = bisect( 1/3, v )
+			top_third_scores[k] = bisect( 1- (1/5), v )
+			bot_third_scores[k] = bisect( 1/5, v )
 		for img in self.images:
 			img_scores = img["comment_data"]
 
@@ -81,7 +81,7 @@ class ImageRanker:
 					# It's pretty trial and error, but it works
 					# Also note that with small samples, the positive file
 					# may become too small
-					if( r < 1/2 ):
+					if( r < 1/4 ):
 						img["weak_tones"].append( tone )
 				elif( img_scores[tone] <= bot_third_scores[tone] ):
 					img["weak_tones"].append( tone )

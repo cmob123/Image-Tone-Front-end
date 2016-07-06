@@ -6,6 +6,7 @@ import time
 import random
 import math
 from tone import ToneAnalyzer
+from classifier import VisualTrainer
 
 # Pulls in the top posts to r/pics
 # For each post, stores the image link, and retrieves the top 10 root level comments
@@ -18,7 +19,7 @@ fieldnames = [
 	"default_classifier_data"]
 
 def main():
-	save_submissions( n_posts=2048, n_comments=25, data_dir="../data/", train_fn="train.csv", test_fn="test.csv")
+	save_submissions( n_posts=2048, n_comments=25, data_dir="../data/", train_fn="train.csv", test_fn="test.csv", v=VisualTrainer())
 
 
 """
@@ -27,7 +28,7 @@ Analyzes the comments, and extracts tone data using the Watson APIs
 Saves ~50% of the data in a training file (using a repeatably seeded prng)
 Saves the rest in a testing file
 """
-def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn = "train.csv", test_fn = "test.csv" ):
+def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn = "train.csv", test_fn = "test.csv", v=VisualTrainer() ):
 	print( "Retrieving {} data points from r/pics".format( n_posts ) )
 	sys.stdout.flush()
 
@@ -69,7 +70,7 @@ def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn 
 			c_posts += 1
 
 			#Process the image, returns true if it processed successfully
-			if( process_post( sub, t, random.choice( [csvw_train, csvw_test] ), n_comments, c_records ) ):
+			if( process_post( sub, t, random.choice( [csvw_train, csvw_test] ), n_comments, c_records, v ) ):
 				c_records += 1
 				print( "Wrote record {}".format( c_records ) )
 				sys.stdout.flush()
