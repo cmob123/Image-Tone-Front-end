@@ -24,44 +24,25 @@ There is an api reference [here](http://www.ibm.com/smarterplanet/us/en/ibmwatso
 
 If you want to write your app in python, like we did, you'll want to use pip to download the watson-developer-cloud sdk. You can also download the sdk from [github](https://github.com/watson-developer-cloud/python-sdk). There are also libraries for java and nodeJS, or you use another language and make HTTP requests manually.
 
-The class we wrote to do tone analysis this is in tone.py. The code is very simple.
+Tone data is returned for 13 tone markers, further subdivided into 3 broad categories.
 
-For our purposes, the tone analyzer gives us a lot of data that we don't need.
-We can discard personality and writing style data, as well as sentence-level analysis.
-To trim our data, we run the following:
+Emotion: Anger, Disgust, Fear, Joy, Sadness
+Writing Style: Analytic, Confident, Tentative
+Personality: Agreeableness, Conscientiousness, Emotional Range, Extraversion, Openness
 
-`emotions = raw_json['document_tone']['tone_categories'][0]['tones']`
+We saved all 13 markers, but our app only displays results for the emotion category
 
-where raw_json is the full response from the tone analyzer.
-This should narrow down the JSON to look something like this:
+The tone analyzer returns document level as well as sentence level tone data. We discarded the sentence level data and stored the result.
 
-`{
-	"score": 0.25482,
-	"tone_id": "anger",
-	"tone_name": "Anger"
-},
-{
-	"score": 0.345816,
-	"tone_id": "disgust",
-	"tone_name": "Disgust"
-},
-{
-	"score": 0.121116,
-	"tone_id": "fear",
-	"tone_name": "Fear"
-},
-{
-	"score": 0.078903,
-	"tone_id": "joy",
-	"tone_name": "Joy"
-},
-{
-	"score": 0.199345,
-	"tone_id": "sadness",
-	"tone_name": "Sadness"
-}`
+`document_level_data = raw_json['document_tone']`
 
-Once you have the simplified JSON, you can extract the numerical scores using the JSON libraries
+Where raw_json is the json struct returned by the Watson API call
+
+We then further processed the information into a python dict that looked like:
+
+`{"Anger":0.104957, "Disgust":0.3658, ... }`
+
+See the src/tone.py file for more information.
 
 Intro to Watson Visual Classifer API
 ------------------------------------
@@ -79,22 +60,70 @@ In the python-sdk, an example call to create a classifier looks like:
 
 The *name*_positive_examples format is important. In our classifier.py file, you can see our wrapper for this function that uses exec to generate variable names for us. Feel free to use this.
 
+Once you have a classifier, you can call it by listing all classifiers, choosing the appropriate classifier_id, and making an sdk call to classify.
+
+The visual recognition API also includes a default classifier, used when no classifier_ids are given. The default classifier attempts to recognize things in the image, like beaches, people, etc. We found the results to range from fairly accurate to unintentianally hilarious, but for the most part did not use this data source, although each image's default classification was saved.
+
 Leveraging Watson APIs to Perform Visual Sentiment Analysis
 -----------------------------------------------------------
-We gathered data from the top 1000 all time posts on reddit.com/r/pics, saving the image url and the results of performing a tone analysis of the top 25 root level comments. (If there were were less than 25 root level comments, we used however many there were.) We did not consider albums or images not in .jpg format. We also did not consider the title of the post, which can often significantly affect the tone of the comments. In total, we were left with about 600 data points. We then split the data in half, using 50% for training and setting aside 50% for testing. This left us with about 300 posts worth of training data.
+We gathered data from the top 5000 all time posts on reddit.com/r/pics, saving the image url and the results of performing a tone analysis of up to the top 25 root level comments. We did not consider albums or images not in .jpg or .png format. We performe tone analysis on the title, but it proved to be less reliable than comment data. In total, we were left with about 3000 data points. We then split the data in half, using 50% for training and setting aside 50% for testing. This left us with about 1500 posts worth of training data.
 
-With this data, we partitioned the images by emotional scores. We saved the top third and bottom third in each emotional category. (about 100 images each.) We used these images sets to train 5 visual classifiers, one for each emotion, using the top third as the positive example, and the bottom third as the negative example.
+With this data, we partitioned the images by tone scores. We saved the top fifth and bottom fifth in each emotional category. (about 200 images each, close to the limit of the largest file accepted by the visual classifier) We used these images sets to train 13 visual classifiers, one for each tone, using the top fifth as the positive example, and the bottom fifth as the negative example.
 
-Results
--------
-__TODO__
+Assesment
+---------
+Any hard statistical analysis is left as an excercise for the reader. (see data/data.csv)
+
+We ran our newly created classifiers on the testing data set, comparing the classifier's confidence levels with the data from the tone analysis. With these 2 data sets, we generated correlation coefficients between our classifiers and reality.
+
+Correlation coefficient of Anger: 0.16750500103560734
+
+Correlation coefficient of Disgust: 0.07663217586591686
+
+Correlation coefficient of Fear: 0.04251686225532842
+
+Correlation coefficient of Joy: 0.174911888103803
+
+Correlation coefficient of Sadness: 0.04281021754469781
+
+Correlation coefficient of Analytical: 0.03288946457777953
+
+Correlation coefficient of Confident: -0.02465216079416054
+
+Correlation coefficient of Tentative: -0.06429863738106256
+
+Correlation coefficient of Openness: 0.24914027524948043
+
+Correlation coefficient of Conscientiousness: 0.0427613161464976
+
+Correlation coefficient of Extraversion: 0.31127442613382056
+
+Correlation coefficient of Agreeableness: 0.17942931077655133
+
+Correlation coefficient of Emotional_Range: 0.0317150556442275
+
+These numbers should be interpreted like so: 
+
+A negative number indicates negative correlation (i.e. Higher classifier confidence means *lower* scores on that tone analysis)
+
+A positive number indicated a positive correlation (i.e. Higher confidence is correlated with a higher score on that tone analysis)
+
+0 indicates random noise (i.e. the number sets are uncorrelated)
+
+We can see that our classifiers are far from accurate, but, on average, they are slightly better than random.
 
 Final Thoughts
 --------------
-How effective were we, what could we have done differently
 
-More data
+This problem has an absurd number of sources of complexity. A brief list:
 
-Different Sources
+Data variety: Any picture is fair game to be posted on reddit. As such, we had to cope with a huge variety of pictures. Limiting ourselves to a subset (like images of people), could have made the project easier. The comment variety was also enormous, including stories, poems, ascii art, and image, video, or web links. Unstructured data like this is difficult to reliably analyze.
 
-Different Classifier Schemes
+The black box of the tone analyzer: The results of tone analysis can be surprising. Often, the results from analyzing a piece of text were counter to what our team expected. The tone analyzer was also not trained on reddit comment data, so results skewed any number of ways: Anger and extraversion were consistenly above 0.5, and confidence was a flat 0.0 for more than a third of posts.
+
+Context blindness: Nothing is posted in a vaccuum. An image of a celebrity may elicit joy (or anger) one day, but there will be much different emotions (sadness) if that same image is posted the day of their death. Discarding title data makes this problem especilly acute.
+
+Despite the low correlation values, we are fairly content with how this project went. Overall, we think that it is just too complex of a problem for machines to solve, and the fact that we got anything at all is encouraging.
+
+Future Work
+-----------
