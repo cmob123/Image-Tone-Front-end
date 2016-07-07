@@ -37,7 +37,9 @@ class Main:
 				i = ImageRanker( self.train_fn, self.data_dir )
 				i.write_pos_neg_files()
 			elif( text == "d" ):
-				self.v.del_all_classifiers()
+				tmp = input( "Classifier id? " )
+				self.v.del_classifier( tmp )
+				#self.v.del_all_classifiers()
 			elif( text == "c" ):
 				# The may want to delete classifiers first
 				self.v.rebuild_classifiers()

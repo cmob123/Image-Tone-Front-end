@@ -10,6 +10,7 @@ def main( url ):
 		d = c.dict_from_json( c.classify_single_image( url ) )
 		if( d is None ):
 			print ("0 0 0 0 0")
+			return
 		output = ""
 		for tone in ["Anger", "Disgust", "Fear", "Joy", "Sadness"]:
 			if tone in d:

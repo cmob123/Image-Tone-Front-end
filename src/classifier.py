@@ -147,7 +147,6 @@ class VisualTrainer:
 				for c in classifier["classes"]:
 					ret[ c["class"] ] = c["score"]
 		except KeyError as e:
-			print( "Key error, something went wrong classifying this image" )
 			return None
 		return ret
 		
