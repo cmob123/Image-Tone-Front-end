@@ -5,13 +5,10 @@ Interfacing with the reddit API
 
 Rather than interacting with the reddit API directly, we will use a prebuilt python interface called [PRAW](https://github.com/praw-dev/praw)
 
-Install using the python package manager, pip:  
+Install using pip:
 `$pip install PRAW`
 
-See redditDataGetter.py
-
-__TODO__:fill in more later
-
+By default, api responses are limited to 1000 entries. This is a hard limit imposed by reddit, and it is not designed to be circumvented. The only way to get more responses is to use the timestamp feature to search by time range. See the code in redditDataGetter.py for an implementation. Using this feature, we are able to collect data from more than 1000 posts.
 
 Intro to Watson Tone Analyzer API
 ---------------------------------
@@ -46,6 +43,7 @@ See the src/tone.py file for more information.
 
 Intro to Watson Visual Classifer API
 ------------------------------------
+
 Just like with the tone analyzer, you need to set up the service in Bluemix before you can get started. Be sure to save the service credentials.
 
 The visual classifer API is significantly more complicated than the tone analysis, primarily because the default corpus is insufficient for our purposes, we must train our own.Again, there is an API reference [here](https://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/visual-recognition/api/v3/), but as of when this was written, only curl examples are complete. We found it helpful to reference the python-sdk source code.
@@ -119,11 +117,17 @@ This problem has an absurd number of sources of complexity. A brief list:
 
 Data variety: Any picture is fair game to be posted on reddit. As such, we had to cope with a huge variety of pictures. Limiting ourselves to a subset (like images of people), could have made the project easier. The comment variety was also enormous, including stories, poems, ascii art, and image, video, or web links. Unstructured data like this is difficult to reliably analyze.
 
-The black box of the tone analyzer: The results of tone analysis can be surprising. Often, the results from analyzing a piece of text were counter to what our team expected. The tone analyzer was also not trained on reddit comment data, so results skewed any number of ways: Anger and extraversion were consistenly above 0.5, and confidence was a flat 0.0 for more than a third of posts.
+Uncertainty surrounding tone analyzer: The results of tone analysis can be surprising. Often, the results from analyzing a piece of text were counter to what our team expected. The tone analyzer was also not trained on reddit comment data, so results skewed any number of ways: Anger and extraversion were consistenly above 0.5, and confidence was a flat 0.0 for more than a third of posts.
 
-Context blindness: Nothing is posted in a vaccuum. An image of a celebrity may elicit joy (or anger) one day, but there will be much different emotions (sadness) if that same image is posted the day of their death. Discarding title data makes this problem especilly acute.
+Context blindness: Nothing is posted in a vaccuum. An image of a celebrity may elicit joy (or anger) one day, but there will be much different emotions (sadness) if that same image is posted the day of their death. Discarding title data makes this problem especilly acute. A more thorough solution could involve reading a post's timestamp and performing some kind of analysis on news articles from the same day or week that feature the same concepts.
 
 Despite the low correlation values, we are fairly content with how this project went. Overall, we think that it is just too complex of a problem for machines to solve, and the fact that we got anything at all is encouraging.
 
 Future Work
 -----------
+
+More complex algorithms, more preprocessing of images.
+
+Limit training data to a certain subset (e.g. pictures of people)
+
+A different data source.
