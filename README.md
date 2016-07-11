@@ -27,9 +27,9 @@ Emotion: Anger, Disgust, Fear, Joy, Sadness
 Writing Style: Analytic, Confident, Tentative
 Personality: Agreeableness, Conscientiousness, Emotional Range, Extraversion, Openness
 
-We saved all 13 markers, but our app only displays results for the emotion category
+We saved all 13 markers, but our app only displays the five results from the emotion category.
 
-The tone analyzer returns document level as well as sentence level tone data. We discarded the sentence level data and stored the result.
+The tone analyzer returns document-level as well as sentence-level tone data. We discarded the sentence level data and stored the document-level results.
 
 `document_level_data = raw_json['document_tone']`
 
