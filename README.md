@@ -41,12 +41,13 @@ We then further processed the information into a python dict that looked like:
 
 See the src/tone.py file for more information.
 
+
 Intro to Watson Visual Classifer API
 ------------------------------------
 
 Just like with the tone analyzer, you need to set up the service in Bluemix before you can get started. Be sure to save the service credentials.
 
-The visual classifer API is significantly more complicated than the tone analysis, primarily because the default corpus is insufficient for our purposes, we must train our own.Again, there is an API reference [here](https://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/visual-recognition/api/v3/), but as of when this was written, only curl examples are complete. We found it helpful to reference the python-sdk source code.
+The visual classifer API is significantly more complicated than the tone analysis, primarily because the default corpus is insufficient for our purposes, so we have to train our own. Again, there is an API reference [here](https://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/visual-recognition/api/v3/), but as of when this was written, only curl examples are complete. We found it helpful to reference the python-sdk source code.
 
 Watson's visual classifier, once trained, takes an image file or url, and outputs its confidence level that that image belongs in each of its pre-established classes. As an example, assume we have a classifier that hase been trained to recognize 2 classes of images, dogs and cats. If we give it a picture of a beagle, it may be 80% confident that that picture is a dog. However, it may also be 10% confident that it is a cat. By default, only 50%+ confidence levels are returned.
 
@@ -54,7 +55,7 @@ Training a classifier requires 2 things. Primarily, for each class of images you
 
 In the python-sdk, an example call to create a classifier looks like:
 
-`create_cassifer( "Dog or Cat", dog_positive_examples=dogs_zipfile, cat_positive_examples=cats_zipfile, negative_examples=neg_zipfile)`
+`create_cassifer( "Dog or Cat", dog_positive_examples=dogs_zipfile.zip, cat_positive_examples=cats_zipfile.zip, negative_examples=neg_zipfile.zip)`
 
 The *name*_positive_examples format is important. In our classifier.py file, you can see our wrapper for this function that uses exec to generate variable names for us. Feel free to use this.
 
@@ -64,15 +65,15 @@ The visual recognition API also includes a default classifier, used when no clas
 
 Leveraging Watson APIs to Perform Visual Sentiment Analysis
 -----------------------------------------------------------
-We gathered data from the top 5000 all time posts on reddit.com/r/pics, saving the image url and the results of performing a tone analysis of up to the top 25 root level comments. We did not consider albums or images not in .jpg or .png format. We performe tone analysis on the title, but it proved to be less reliable than comment data. In total, we were left with about 3000 data points. We then split the data in half, using 50% for training and setting aside 50% for testing. This left us with about 1500 posts worth of training data.
+We gathered data from the top 5,000 all time posts on reddit.com/r/pics, saving the image url and the results of performing a tone analysis of up to the top 25 root-level comments. We did not consider albums or images not in .jpg or .png format. We tried performing tone analysis on the title, but it turned out to be less reliable than comment data. In total, we were left with about 3,000 data points. We then split the data in half, using 50% for training and setting aside 50% for testing, leaving us with about 1,500 posts worth of training data.
 
-With this data, we partitioned the images by tone scores. We saved the top fifth and bottom fifth in each emotional category. (about 200 images each, close to the limit of the largest file accepted by the visual classifier) We used these images sets to train 13 visual classifiers, one for each tone, using the top fifth as the positive example, and the bottom fifth as the negative example.
+With this data, we partitioned the images by tone scores. We saved the top fifth and bottom fifth in each emotional category. (about 200 images each, close to the limit of the largest file accepted by the visual classifier) We used these image sets to train 13 visual classifiers, one for each tone, using the top fifth as positive examples, and the bottom fifth as negative examples.
 
 Assesment
 ---------
 Any hard statistical analysis is left as an excercise for the reader. (see data/data.csv)
 
-We ran our newly created classifiers on the testing data set, comparing the classifier's confidence levels with the data from the tone analysis. With these 2 data sets, we generated correlation coefficients between our classifiers and reality.
+We ran our newly created classifiers on the testing data set, comparing the classifier's confidence levels with the data from the tone analysis. Using these 2 data sets, we generated correlation coefficients between our classifiers and reality.
 
 Correlation coefficient of Anger: 0.16750500103560734
 
@@ -104,24 +105,29 @@ These numbers should be interpreted like so:
 
 A negative number indicates negative correlation (i.e. Higher classifier confidence means *lower* scores on that tone analysis)
 
-A positive number indicated a positive correlation (i.e. Higher confidence is correlated with a higher score on that tone analysis)
+A positive number indicated a positive correlation (i.e. Higher confidence levels are correlated with higher scores on that tone analysis)
 
-0 indicates random noise (i.e. the number sets are uncorrelated)
+0 indicates random noise (i.e. the number sets aren't correlated)
 
 We can see that our classifiers are far from accurate, but, on average, they are slightly better than random.
+
+Web Front-End
+--------------
+For documentation on the creation of the web front-end and communication of the results between the server and the client, see the Readme in the 'Front-End' directory.
+
 
 Final Thoughts
 --------------
 
 This problem has an absurd number of sources of complexity. A brief list:
 
-Data variety: Any picture is fair game to be posted on reddit. As such, we had to cope with a huge variety of pictures. Limiting ourselves to a subset (like images of people), could have made the project easier. The comment variety was also enormous, including stories, poems, ascii art, and image, video, or web links. Unstructured data like this is difficult to reliably analyze.
+Data variety: Any picture is fair game to be posted on reddit. As such, we had to cope with a huge variety of pictures. Limiting ourselves to a subset (like images of people), could have made the results more accurate. The comment variety was also enormous, including stories, poems, ascii art, and image, video, or web links. Unstructured data like this is difficult to reliably analyze.
 
-Uncertainty surrounding tone analyzer: The results of tone analysis can be surprising. Often, the results from analyzing a piece of text were counter to what our team expected. The tone analyzer was also not trained on reddit comment data, so results skewed any number of ways: Anger and extraversion were consistenly above 0.5, and confidence was a flat 0.0 for more than a third of posts.
+Uncertainty surrounding tone analyzer: The results of tone analysis can be surprising. Often, the results from analyzing a piece of text were counter to what our team expected. The tone analyzer was also not trained on reddit comment data, so results skewed any number of ways: Anger and extraversion were consistenly above 0.5, and confidence was a flat 0.0 for more than a third of the posts analyzed.
 
-Context blindness: Nothing is posted in a vaccuum. An image of a celebrity may elicit joy (or anger) one day, but there will be much different emotions (sadness) if that same image is posted the day of their death. Discarding title data makes this problem especilly acute. A more thorough solution could involve reading a post's timestamp and performing some kind of analysis on news articles from the same day or week that feature the same concepts.
+Context blindness: Nothing is posted in a vaccuum. An image of a celebrity may elicit joy (or anger) one day, but there will be much different emotions (sadness) if that same image is posted the day of their death. Discarding title data makes this problem especially acute. A more thorough solution could involve reading a post's timestamp and performing some kind of analysis on news articles from the same day or week that feature the same concepts.
 
-Despite the low correlation values, we are fairly content with how this project went. Overall, we think that it is just too complex of a problem for machines to solve, and the fact that we got anything at all is encouraging.
+Despite the low correlation values, we are fairly content with how this project went. Overall, we think that it is just too complex of a problem for machines to solve given the restraints on the size of input, and the fact that we got anything at all is encouraging.
 
 Future Work
 -----------
