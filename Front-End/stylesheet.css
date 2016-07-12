@@ -1,0 +1,104 @@
+div {
+    border-radius: 10px;
+    border-color: white;
+}
+#header {
+    height: 50px;
+    width: 350px;
+    margin: auto;
+    margin-top: 30px;
+    margin-bottom: 0px;
+    text-align: center;
+    font-family: serif;
+}
+body {
+    background-color: black;
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+#formDiv{
+    margin: auto;
+    margin-top: 0px;
+    height: 35px;
+}
+#form {
+    width: 300px;
+    margin: auto;
+    margin-top: 50px;
+    margin-bottom: 0px;
+    float: top;
+}
+.text {
+    color: white;
+    text-align: center;
+}
+#prompt{
+    float: left;
+    font-size: 17px;
+}
+#field {
+    width: 210px;
+    margin:auto;
+    float: right;
+}
+#button {
+    margin: auto;
+    width: 150px;
+    height: 28px;
+    float: bottom;
+    margin-top: 40px;
+    margin-bottom: 0px;
+    background-color: #00ccff;
+    border-radius: 5px;
+    font-size: 17px;
+    opacity: .85;
+    cursor: pointer;
+    cursor: hand;
+}
+#error {
+    margin: auto;
+    width: 240px;
+    height: 25px;
+    float: bottom;
+    margin-top: 30px;
+    margin-bottom: 0px;
+    border-radius: 5px;
+    font-size: 17px;
+}
+#previewTextDiv {
+    margin: auto;
+    margin-top: 20px;
+    width: 110px;
+    height: 20px;
+}
+#previewText {
+    margin-top: 0px;
+}
+#preview {
+    max-width: 600px;
+    max-height: 300px;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+#resultsDiv {
+    width: 675px;
+}
+#list {
+    list-style-type: none;
+}
+li {
+    display: inline;
+    margin: 8px;
+    font-size: 20px;
+}
+#details {
+    /*background: rgba(0, 0, 0, 0.4);*/ /* translucent black */
+    background-color: black;
+    opacity: .6;
+    text-align: center;
+    height: 100px;
+    clear: both;
+    bottom: 0%;
+    position: fixed;
+    width: 100%;
+}
