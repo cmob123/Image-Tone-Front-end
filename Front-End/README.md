@@ -14,4 +14,5 @@ If something went wrong in this process, the string returned will either be empt
 Finally, back in the JQuery, this string is interpreted, and either the results are outputted to the user (along with a small copy of the image they inputted), or an error message is generated.
 
 For further information on the development of the front-end, feel free to contact me at cmobrien@us.ibm.com or cobrien3@mail.smcvt.edu
+
 For further information on the back-end of this project, see BTV-visual-sentiment/README.md
