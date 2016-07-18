@@ -1,5 +1,9 @@
 #Visual Sentiment Analysis using Watson APIs and Data from reddit.com
 
+Try it now
+----------
+btv-visual.w3ibm.mybluemix.net
+
 Interfacing with the reddit API
 -------------------------------
 
