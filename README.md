@@ -1,5 +1,9 @@
 #Visual Sentiment Analysis using Watson APIs and Data from reddit.com
 
+Try it now
+----------
+btv-visual.w3ibm.mybluemix.net
+
 Interfacing with the reddit API
 -------------------------------
 
@@ -69,7 +73,7 @@ We gathered data from the top 5,000 all time posts on reddit.com/r/pics, saving 
 
 With this data, we partitioned the images by tone scores. We saved the top fifth and bottom fifth in each emotional category. (about 200 images each, close to the limit of the largest file accepted by the visual classifier) We used these image sets to train 13 visual classifiers, one for each tone, using the top fifth as positive examples, and the bottom fifth as negative examples.
 
-Assesment
+Assessment
 ---------
 Any hard statistical analysis is left as an excercise for the reader. (see data/data.csv)
 
