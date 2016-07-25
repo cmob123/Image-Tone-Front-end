@@ -55,7 +55,7 @@ Training a classifier requires 2 things. Primarily, for each class of images you
 
 In the python-sdk, an example call to create a classifier looks like:
 
-`create_cassifer( "Dog or Cat", dog_positive_examples=dogs_zipfile.zip, cat_positive_examples=cats_zipfile.zip, negative_examples=neg_zipfile.zip)`
+`create_classifer( "Dog or Cat", dog_positive_examples=dogs_zipfile.zip, cat_positive_examples=cats_zipfile.zip, negative_examples=neg_zipfile.zip)`
 
 The *name*_positive_examples format is important. In our classifier.py file, you can see our wrapper for this function that uses exec to generate variable names for us. Feel free to use this.
 
