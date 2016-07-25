@@ -1,0 +1,4 @@
+---
+applications:
+- name: BTV-Flask
+  memory: 128M
