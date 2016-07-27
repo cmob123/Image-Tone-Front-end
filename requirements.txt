@@ -1,3 +1,4 @@
 watson-developer-cloud
 numpy
-praw
+flask
+requests
