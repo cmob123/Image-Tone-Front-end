@@ -18,7 +18,7 @@ def classify( url ):
 			if tone in d:
 				output += str( d[tone]) + ' '
 			else:
-				output += '0 '
+				return "ERROR: Classifiers"
 		return output
 	except:
 		return "ERROR: Unknown"
