@@ -13,7 +13,7 @@ import os
 import sys
 import zipfile
 from pprint import pprint
-from urllib2 import urlopen
+import urllib.request
 import functools
 import random
 from dataOps import *
