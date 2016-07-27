@@ -13,7 +13,10 @@ import os
 import sys
 import zipfile
 from pprint import pprint
-import urllib.request
+try:
+	import urllib.request
+except ImportError:
+	from urllib import request
 import functools
 import random
 try:
