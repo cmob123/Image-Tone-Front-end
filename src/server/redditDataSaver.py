@@ -5,8 +5,8 @@ import csv
 import time
 import random
 import math
-from tone import ToneAnalyzer
-from classifier import VisualTrainer
+from .tone import ToneAnalyzer
+from .classifier import VisualTrainer
 
 # Pulls in the top posts to r/pics
 # For each post, stores the image link, and retrieves the top 10 root level comments

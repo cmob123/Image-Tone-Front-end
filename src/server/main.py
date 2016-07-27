@@ -1,7 +1,7 @@
-from redditDataSaver import *
-from imageRanker import *
-from classifier import *
-from testClassifiers import *
+from .redditDataSaver import *
+from .imageRanker import *
+from .classifier import *
+from .testClassifiers import *
 
 
 """

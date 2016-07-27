@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify
-import processImage
+import server.processImage
 
 app = Flask(__name__)
 

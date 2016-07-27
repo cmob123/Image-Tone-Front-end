@@ -16,8 +16,8 @@ from pprint import pprint
 import urllib.request
 import functools
 import random
-from dataOps import *
-from tone import tone_names
+from .dataOps import *
+from .tone import tone_names
 
 class ImageRanker:
 

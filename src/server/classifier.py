@@ -1,11 +1,10 @@
 import json
 import time
 from watson_developer_cloud import VisualRecognitionV3, WatsonException
-#from visual_recognition_v3 import VisualRecognitionV3
 import requests
 import sys
-from imageRanker import *
-from tone import tone_names
+from .imageRanker import *
+from .tone import tone_names
 
 
 apikey = "d4ca6fa90d1f2b026d9a6cb3499c64a05ada3409"
