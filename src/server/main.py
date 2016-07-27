@@ -1,7 +1,13 @@
-from .redditDataSaver import *
-from .imageRanker import *
-from .classifier import *
-from .testClassifiers import *
+try:
+	from redditDataSaver import *
+	from imageRanker import *
+	from classifier import *
+	from testClassifiers import *
+except ImportError:
+	from .redditDataSaver import *
+	from .imageRanker import *
+	from .classifier import *
+	from .testClassifiers import *
 
 
 """

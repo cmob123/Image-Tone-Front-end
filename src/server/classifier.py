@@ -3,8 +3,13 @@ import time
 from watson_developer_cloud import VisualRecognitionV3, WatsonException
 import requests
 import sys
-from .imageRanker import *
-from .tone import tone_names
+try:
+	from imageRanker import *
+	from tone import tone_names
+except ImportError:
+	from .imageRanker import *
+	from .tone import tone_names
+	
 
 
 apikey = "d4ca6fa90d1f2b026d9a6cb3499c64a05ada3409"

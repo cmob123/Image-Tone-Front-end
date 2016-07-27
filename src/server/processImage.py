@@ -1,7 +1,10 @@
 # takes in link and prints results from Watson's Visual Recognition API. Writen by Jesse Earisman.
 
 import sys
-from .classifier import VisualTrainer
+try:
+	from classifier import VisualTrainer
+except ImportError:
+	from .classifier import VisualTrainer
 
 def main( url ):
 	try:
