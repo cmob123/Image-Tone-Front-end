@@ -3,7 +3,7 @@
 #1.5) If the don't exist, run reddittest.py to create them (TODO)
 #2) Import data into internal data structures
 #3) Preprocess the numbers in any way necessary. (Normalize, etc)
-#4) Sort the data and save positive and negative examples into the ../data/ directory
+#4) Sort the data and save positive and negative examples into the ./data/ directory
 
 
 import numpy
@@ -21,7 +21,7 @@ from .tone import tone_names
 
 class ImageRanker:
 
-	def __init__( self, csv_file_name="data.csv", data_dir="../data/" ):
+	def __init__( self, csv_file_name="data.csv", data_dir="./data/" ):
 		random.seed(0)
 		self.data_dir = data_dir
 		csv_fn = self.data_dir + csv_file_name

@@ -19,7 +19,7 @@ fieldnames = [
 	"default_classifier_data"]
 
 def main():
-	save_submissions( n_posts=2048, n_comments=25, data_dir="../data/", train_fn="train.csv", test_fn="test.csv", v=VisualTrainer())
+	save_submissions( n_posts=2048, n_comments=25, data_dir="./data/", train_fn="train.csv", test_fn="test.csv", v=VisualTrainer())
 
 
 """
@@ -28,7 +28,7 @@ Analyzes the comments, and extracts tone data using the Watson APIs
 Saves ~50% of the data in a training file (using a repeatably seeded prng)
 Saves the rest in a testing file
 """
-def save_submissions( n_posts, n_comments = 25, data_dir = "../data/", train_fn = "train.csv", test_fn = "test.csv", v=VisualTrainer() ):
+def save_submissions( n_posts, n_comments = 25, data_dir = "./data/", train_fn = "train.csv", test_fn = "test.csv", v=VisualTrainer() ):
 	print( "Retrieving {} data points from r/pics".format( n_posts ) )
 	sys.stdout.flush()
 

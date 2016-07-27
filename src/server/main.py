@@ -22,7 +22,7 @@ class Main:
 		#self.update_files()
 		self.test_fn = "test.csv"
 		self.train_fn = "train.csv"
-		self.data_dir = "../data/"
+		self.data_dir = "./data/"
 
 
 	def main(self):
@@ -84,9 +84,9 @@ class Main:
 		but it isn't, so won't
 	"""
 	def update_files( self ):
-		self.data_dir = input( "Enter data directory, leave blank for '../data/': " )
+		self.data_dir = input( "Enter data directory, leave blank for './data/': " )
 		if( self.data_dir == "" ):
-			self.data_dir = "../data/"
+			self.data_dir = "./data/"
 		print(" - Using {} as data directory".format( self.data_dir ) )
 
 		self.train_fn = input( "Enter the name of the training csv file, leave blank for 'train.csv': " )

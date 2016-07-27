@@ -214,12 +214,12 @@ class VisualTrainer:
 	Make sure you called the appropriate method in imageRanker before
 	calling this.
 	"""
-	def rebuild_classifiers( self, data_dir = "../data/" ):
+	def rebuild_classifiers( self, data_dir = "./data/" ):
 		for tone in tone_names:
 			classifier_name = tone + "class"
 			class_name = tone
-			filename = "../data/" + tone + ".zip"
-			neg_filename = "../data/neg-" + tone + ".zip"
+			filename = "./data/" + tone + ".zip"
+			neg_filename = "./data/neg-" + tone + ".zip"
 			self.new_classifier(
 				classifier_name,
 				[class_name],
