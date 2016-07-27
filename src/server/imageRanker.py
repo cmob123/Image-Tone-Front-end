@@ -13,10 +13,7 @@ import os
 import sys
 import zipfile
 from pprint import pprint
-try:
-	import urllib.request
-except ImportError:
-	from urllib import request
+import requests
 import functools
 import random
 try:
@@ -128,15 +125,15 @@ class ImageRanker:
 			if( not os.path.exists( new_path ) ):
 				print( "Downloading {} as {}".format( img["url"], new_path )  )
 				try:
-					urllib.request.urlretrieve( img["url"], new_path  )
-				# catch errors
-				except urllib.error.HTTPError as e:
-					print( "Error (HTTP): couldn't retrieve image at {}".format( img["url"] ) )
-					print( str( e ) )
-					continue
-				except urllib.error.URLError as e:
-					print( "Error (URL): couldn't retrieve image at {}".format( img["url"] ) )
-					print( str(e) )
+					r = requests.get( img["url"] )
+					if( r.status_code != 200 ):
+						print( "Couldn't retreive {}, code {}".format( img["url"], r.status_code ) )
+						continue
+					f = open( new_path, "wb" )
+					f.write( r.content )
+					f.close()
+				except Exception as e:
+					print( e )
 					continue
 
 			# imgur's "removed.png" file is 503 bytes, far smaller than
