@@ -24,12 +24,13 @@ def index():
 @app.route('/_passLink')
 def passLink():
 	try:
-		return processImage.classify(request.args.get('input')) #send link to processImage.py
-	#except Exception as err:
-	#	return 'ERROR: ' + err
-	except:
-		return 'ERROR in passLink()'
+		return server.processImage.classify(request.args.get('input'))
+	except Exception as e:
+		try:
+			return 'ERROR: ' + str(e)
+		except:
+			return 'ERROR: ???'
 
 port = os.getenv('PORT', '5000')
 if __name__ == "__main__":
-	app.run(host='0.0.0.0', port=int(port))
+	app.run(host='127.0.0.1', port=int(port))

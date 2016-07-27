@@ -6,23 +6,23 @@ try:
 except ImportError:
 	from .classifier import VisualTrainer
 
-def main( url ):
+def classify( url ):
 	try:
 		c = VisualTrainer()
 		c.set_classifiers( c.get_classifier_ids() )
 		d = c.dict_from_json( c.classify_single_image( url ) )
-		if( d is None ):
-			print ("0 0 0 0 0")
-			return
 		output = ""
+		if( d is None ):
+			return "ERROR: Watson"
 		for tone in ["Anger", "Disgust", "Fear", "Joy", "Sadness"]:
 			if tone in d:
-				output += str(d[tone]) + ' '
+				output += str( d[tone]) + ' '
 			else:
 				output += '0 '
-		print (output)
+		return output
 	except:
-		print ("0 0 0 0 0")
+		return "ERROR: Unknown"
+
 
 
 if( __name__ == "__main__" ):

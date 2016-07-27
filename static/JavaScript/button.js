@@ -78,16 +78,9 @@ $(document).ready(function(){
 					console.log('Recieved results: ' + String(output))
 
 					// check for errors
-					if (output === '0 0 0 0 0') {
-						showError('ERROR: Message to server Failed')
-						console.log('ERROR: Python returned all zeroes')
-					}
-					else if (output === "") {
-						showError('ERROR: Daily limits reached :(')
-						console.log('ERROR: AJAX call returned an empty string')
-					}
-					else if (output.search('ERROR') != -1) showError(output)
-					else {
+					if (output.search('ERROR') != -1) {
+						showError(output)
+					} else {
 						results = output.split(' ')
 						console.log('Array: ' + results)
 					}
