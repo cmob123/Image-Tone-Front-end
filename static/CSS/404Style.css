@@ -1,0 +1,53 @@
+div {
+    border-radius: 10px;
+    border-color: white;
+}
+#header {
+    height: 80px;
+    width: 390px;
+    padding: 1px;
+    margin: auto;
+    margin-top: 150px;
+    margin-bottom: 0px;
+    text-align: center;
+    font-family: serif;
+    background: rgba(0, 0, 0, 0.7); /* translucent black */
+}
+body {
+    overflow: hidden;
+    background: url(../Images/background.png);
+    background-size: 100% 100%;
+    background-repeat: repeat-y;
+}
+.text {
+    color: white;
+    text-align: center;
+}
+#textWrapper {
+    margin: auto;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.7); /* translucent black */
+    width: 45%;
+}
+.body {
+    margin: auto;
+}
+#buttonWrapper {
+    text-align: center;
+}
+#mainButton {
+    display: inline-block;
+    margin: auto;
+    width: 220px;
+    height: 42px;
+    float: bottom;
+    margin-top: 40px;
+    margin-bottom: 0px;
+    background-color: #0cf;
+    border-radius: 5px;
+    font-size: 25px;
+    opacity: .85;
+    cursor: pointer;
+    cursor: hand;
+}

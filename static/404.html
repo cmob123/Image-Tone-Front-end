@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<!-- 
+	Page to handle 404 not found errors.
+	Written by Chris O'Brien. 
+-->
+
+<html>
+	<head>
+		<link href="static/Images/favicon.ico" rel="shortcut icon" type="image/x-icon" /> <!-- Site Icon -->
+		
+		<!-- Metadata -->
+		<meta charset='UTF-8'>
+		<meta name='description' content='Image-Tone Analyzer'>
+		<meta name='keywords' content='IBM, Watson, Image, Tone'>
+		<meta name='author' content="Chris O'Brien">
+
+		<!-- Scripts -->
+	    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js'></script>
+        <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js'></script>	    
+	    <noscript>Sorry, your browser does not support JavaScript! :(</noscript>
+
+	    <!-- CSS -->
+		<link href='static/CSS/404Style.css' type='text/css' rel='stylesheet'/>
+		<link href='static/CSS/css/bootstrap.min.css' rel='stylesheet'>
+	    <link href='static/CSS/css/landing-page.css' rel='stylesheet'>
+
+	    <!-- Fonts -->
+	    <link href='static/CSS/font-awesome/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+	    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'>
+
+		<title>404: Page Not Found</title>
+	</head>
+	<body>
+	    <div id='header'>
+	    	<h1 class='text'>404: Page Not Found</h1>	
+	    </div>
+	    <div id='textWrapper'>
+		    <h3 class='body text'>Uh-oh! Looks like the page you were looking for isn't here :(</h3>
+		    <h3 class='body text'>Make sure you typed the address correctly and try again.</h3>
+	    </div>
+	    <div id='buttonWrapper'>
+		    <a href='/'>
+			    <div id='mainButton' class='text'>
+			    	Home
+			    </div>
+		    </a>
+	    </div>
+	    <script>
+    	    $(document).ready(function(){
+			    // fade button in & out based on mouse position
+				$('#mainButton').hover(function(){
+					$(this).fadeTo('fast', 1)
+			    }, function(){
+			        $(this).fadeTo('fast', .85)
+			    })
+	    	})
+	    </script>
+	</body>
+</html>

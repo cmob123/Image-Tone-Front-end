@@ -1,0 +1,92 @@
+<!-- Main html document for an image-tone analyzer, leveraging APIs from IBM's Watson. 
+Front-end written by Chris O'Brien. -->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="static/Images/favicon.ico" rel="shortcut icon" type="image/x-icon" /> <!-- Site Icon -->
+		
+		<!-- Metadata -->
+		<meta charset='UTF-8'>
+		<meta name='description' content='Image-Tone Analyzer'>
+		<meta name='keywords' content='IBM, Watson, Image, Tone'>
+		<meta name='author' content="Chris O'Brien">
+
+		<!-- Scripts -->
+	    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js'></script>
+        <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js'></script>	    
+	    <noscript>Sorry, your browser does not support JavaScript! :(</noscript>
+
+	    <!-- CSS -->
+		<link href='static/CSS/frontStyle.css' type='text/css' rel='stylesheet'/>
+		<link href='static/CSS/css/bootstrap.min.css' rel='stylesheet'>
+	    <link href='static/CSS/css/landing-page.css' rel='stylesheet'>
+
+	    <!-- Fonts -->
+	    <link href='static/CSS/font-awesome/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+	    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'>
+
+		<title>Front-End Documentation</title>
+	</head>
+	<body>
+	    <div id='headerDiv'>
+	    	<h1 class='text' id='title'>Front-End Documentation</h1>	
+	    </div>
+	    <div id='textDiv'>
+		    <p class='text' id='title'>
+				Communicating Results from Watson APIs (Server-Side) to JavaScript (Client-Side)
+			</p>
+			<p class='text' id='byLine'>
+				By Chris O'Brien
+			</p>
+			<div id='gitWrapper'>
+				<a href='https://github.ibm.com/jearism/BTV-visual-sentiment/blob/master/static/README.md'>
+					<div id='gitButton' class='text'>
+							View in GitHub
+					</div>
+				</a>
+			</div>
+			<p class='body'>
+				Once we had a rough idea of how our visual classifiers were going to work, we started thinking of how we would communicate our results with the user. We decided we'd build a website using Bluemix and display it there, and I took over getting the front-end ready. It took a lot of research and more than a few hours on stack overflow and w3schools, but eventually I was looking at a working front-end.
+			</p>
+			<p class='body'>
+				Most of the site's design and aesthetics were done with HTML, CSS, and JavaScript (or JQuery). While this took a significant amount of time to accomplish, the focus of this documentation is not on the front-end itself, but rather on how to link this front-end with the server-side back-end.
+			</p>
+			<p class='body'>
+				This link was established by creating a Flask application and sending an AJAX request (containing the link inputted by the user) from JQuery (in button.js) on the front-end to a route on the site (<span>/_passLink</span>). As defined in welcome.py, this routes the request to the <span>classify()</span> method in <span>processImage.py</span>. The <span>classify()</span> method then processes the link and returns a string to welcome.py, which in turn returns the string back to the JQuery.
+			</p>
+			<p class='body'>
+				If everything went well, this string contains 5 numbers, each separated by a space (for example, <span>.58 .93 .34 .67 .52</span>). Each of these numbers represents the output from one of the visual classifiers (of which there are thirteen, but as noted in the back-end documentation, we chose to only show the five 'emotional' classifiers: Anger, Disgust, Fear, Joy, and Sadness).
+			</p>
+			<p class='body'>
+				If something went wrong in this process, the string returned will either be empty (meaning the Watson API threw an exception when we attempted to access it, so some sort of limit has been reached), contain <span>0 0 0 0 0</span> (meaning something went wrong while trying to parse the results from the Watson API call in the python script), or contain some sort of error message (such as an HTTP 403 or 404 error)
+			</p>
+			<p class='body'>
+				Finally, back in the JQuery, this string is interpreted, and either the results are outputted to the user (along with a small copy of the image they inputted), or an error message is generated.
+			</p>
+			<p class='body' id='last'>
+				For further information on the development of the front-end, feel free to contact me at cmobrien@us.ibm.com or cobrien3@mail.smcvt.edu
+			</p>
+		</div>
+	    <div id='detailsBackground'>
+	    	<a href='/'><div class='docButton' id='front-end'>Home</div></a>
+	    	<a href='backDoc.html'><div class='docButton' id='back-end'>Back-End Documentation</div></a>
+	    </div>
+	    <script>
+	    	$(document).ready(function(){
+	    		// fade footer in & out based on mouse position
+				$('#detailsBackground').hover(function(){
+					$(this).fadeTo('fast', .95)
+			    }, function(){
+			        $(this).fadeTo('fast', .6)
+			    })
+			    // fade button in & out based on mouse position
+				$('#gitButton').hover(function(){
+					$(this).fadeTo('fast', 1)
+			    }, function(){
+			        $(this).fadeTo('fast', .85)
+			    })
+	    	})
+	    </script>
+	</body>
+</html>
