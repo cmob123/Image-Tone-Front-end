@@ -72,7 +72,7 @@ $(document).ready(function(){
 					console.log('  XMLhttpRequest: ' + xhr)
 					console.log('  Status: ' + status)
 					console.log('  Error: ' + err)
-				},
+				}
 			}) // end ajax request
 		}
 	    $button.html('Analyze!')
