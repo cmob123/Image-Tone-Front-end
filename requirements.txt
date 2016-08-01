@@ -1,4 +1,7 @@
 watson-developer-cloud
+
 numpy
+
 flask
+
 requests
