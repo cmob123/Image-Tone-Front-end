@@ -13,7 +13,6 @@ div {
     font-family: serif;
     background: rgba(0, 0, 0, 0.7); /* translucent black */
 }
-
 body {
     background: url(../Images/background.png);
     background-size: 100% 145%;
@@ -42,6 +41,7 @@ body {
     text-align: center;
 }
 #gitButton {
+    display: inline-block;
     margin: auto;
     width: 220px;
     height: 35px;
@@ -54,7 +54,6 @@ body {
     cursor: hand;
     color: white;
 }
-
 .section {
 	color: white;
 	font-size: 27px;
