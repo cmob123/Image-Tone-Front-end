@@ -103,30 +103,26 @@ $(document).ready(function(){
 			$('.bar').css('background', 'rgba(255, 255, 255, .8)')
 
 			// display bars
-			$('#header').animate({height: '47px'}, 4000, fillBars) // animation that does nothing, delay so the user sees the bars fill
+			var percentNum, // convert result from string to number
+				outputString, // initialized in if/else
+				outerWidth; // store width of the bar (without 'px')
+			for(var i=0; i<5; i++){
+				percentNum = Math.round(parseFloat(results[i])*100) // convert result from string to number
+				outerWidth = $('.bar').width() // store width of the bar (without 'px')
+				if (isNaN(percentNum)){ // check to see if output is 'NaN'
+					// fill entire bar and return error
+					outputString = 'ERROR: Not a Number :('
+					percentNum = 100
+				}
+				else { // fill portion of bar and print result as a percentage
+					outputString = String(percentNum) + '%' // add '%' to percentNum and make it a string
+				}
+				$('#fill' + String(i+1)).animate({width: String(percentNum)+'%'}, 1000) // animate bar filling up
+				$('#fillNum' + String(i+1)).html(outputString) // display output
+			} // end for
+			detectOverflow() // detect whether or not scrollbars are needed
 		} // end if
 	}); // end ajaxComplete
-
-	function fillBars(){
-		var percentNum, // convert result from string to number
-			outputString, // initialized in if/else
-			outerWidth; // store width of the bar (without 'px')
-		for(var i=0; i<5; i++){
-			percentNum = Math.round(parseFloat(results[i])*100) // convert result from string to number
-			outerWidth = $('.bar').width() // store width of the bar (without 'px')
-			if (isNaN(percentNum)){ // check to see if output is 'NaN'
-				// fill entire bar and return error
-				outputString = 'ERROR: Not a Number :('
-				percentNum = 100
-			}
-			else { // fill portion of bar and print result as a percentage
-				outputString = String(percentNum) + '%' // add '%' to percentNum and make it a string
-			}
-			$('#fill' + String(i+1)).animate({width: String(percentNum)+'%'}, 1000) // animate bar filling up
-			$('#fillNum' + String(i+1)).html(outputString) // display output
-		} // end for
-		detectOverflow() // detect whether or not scrollbars are needed
-	}
 
 	function detectOverflow(){ // dynamically check if scrollbars are needed (overflow is hidden by default)
 		var $previewBottom = $('#previewDiv').offset().top + $('#previewDiv').height(), // bottom of the preview

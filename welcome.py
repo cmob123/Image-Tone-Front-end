@@ -1,6 +1,5 @@
 import os
 from flask import Flask, request, jsonify
-import server.processImage
 
 app = Flask(__name__)
 
@@ -24,13 +23,7 @@ def index():
     
 @app.route('/_passLink')
 def passLink():
-	try:
-		return server.processImage.classify(request.args.get('input'))
-	except Exception as e:
-		try:
-			return 'ERROR: ' + str(e)
-		except:
-			return 'ERROR: ???'
+	return '.56 .42 .75 .31 .88'
 
 @app.errorhandler(404)
 def notFound(err):
